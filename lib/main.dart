@@ -12,7 +12,7 @@ class MainApp extends StatelessWidget {
     return const MaterialApp(
       home: Scaffold(
         body: Center(
-          child: Text('Main file in Sawweb'),
+          child: Text('Main.dart in Sawweb'),
         ),
       ),
     );
