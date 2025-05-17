@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sawweb/Navbar.dart';
+import 'package:sawweb/homePage.dart';
 
 class Signup extends StatelessWidget {
   Signup({super.key});
@@ -65,7 +67,11 @@ class Signup extends StatelessWidget {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.of(context).pushReplacement(
+                   MaterialPageRoute(builder: (context) => Navbar())
+                  );
+                },
                 child: Text('دخول', style: TextStyle(fontSize: 15)),
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(300, 50), 

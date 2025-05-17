@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  standard_searchbar: ^2.0.0
+  font_awesome_flutter: ^10.7.0
+
 
 dev_dependencies:
   flutter_test:
