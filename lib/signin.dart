@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:sawweb/signup.dart';
+import 'package:sawweb/Navbar.dart';
+import 'package:sawweb/homePage.dart';
+
 
 class Signin extends StatelessWidget {
   const Signin({super.key});
@@ -67,15 +70,13 @@ class Signin extends StatelessWidget {
               SizedBox(height: 20),
               ElevatedButton(
                 onPressed: () {
-                  Navigator.of(context).pushNamed('track');
+                  Navigator.of(context).pushNamed('navBar');
                 },
                 child: Text('دخول', style: TextStyle(fontSize: 15)),
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(300, 50), 
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),// Width: 200, Height: 50
                 ),
-                
-              
               ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),

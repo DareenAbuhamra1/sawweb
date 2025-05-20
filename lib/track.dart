@@ -9,7 +9,7 @@ class Track extends StatelessWidget {
       'title': 'انقطاع الكهرباء',
       'location': 'وسط البلد',
       'date': '2025-04-20',
-      'icon': Icons.bolt,
+      'icon': Icons.power,
       'type': 'كهرباء',
       'estimatedTime': '3 أيام',
       
@@ -18,7 +18,7 @@ class Track extends StatelessWidget {
       'title': 'تسرب مياه',
       'location': 'عبدون',
       'date': '2025-04-19',
-      'icon': Icons.water_drop,
+      'icon': Icons.water,
       'type': 'مياه',
       'estimatedTime': '1 أيام',
     },
@@ -40,7 +40,7 @@ class Track extends StatelessWidget {
               style: TextStyle(
                 fontFamily: 'AlexandriaArabic',
                 fontWeight: FontWeight.bold,
-                color: Color.fromARGB(255, 20, 60, 140),
+                color: Color.fromARGB(255, 10, 40, 95),
               ),
             ),
           ),
@@ -55,11 +55,11 @@ class Track extends StatelessWidget {
                 ),
                 child: TabBar(
                   indicator: BoxDecoration(
-                    color: Color.fromARGB(255, 20, 60, 140),
+                    color: Color.fromARGB(255, 73, 109, 145),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   labelColor: Colors.white,
-                  unselectedLabelColor: Color.fromARGB(255, 20, 60, 140),
+                  unselectedLabelColor:Color.fromARGB(255, 10, 40, 95),
                   labelStyle: TextStyle(
                     fontFamily: 'AlexandriaArabic',
                     fontWeight: FontWeight.bold,
@@ -96,7 +96,7 @@ class Track extends StatelessWidget {
                                   ),
                                   padding: EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: Color(0xFF3458A0),
+                                    color: Color.fromARGB(255, 73, 109, 145),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Row(
@@ -107,17 +107,10 @@ class Track extends StatelessWidget {
                                         width: 80,
                                         child: Column(
                                           children: [
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                shape: BoxShape.circle,
-                                              ),
-                                              padding: EdgeInsets.all(12),
-                                              child: Icon(
-                                                complaint['icon'],
-                                                color: Color(0xFF3458A0),
-                                                size: 32,
-                                              ),
+                                            Icon(
+                                              complaint['icon'],
+                                              color: Colors.white,
+                                              size: 40,
                                             ),
                                             SizedBox(height: 4),
                                             Text(
@@ -157,7 +150,7 @@ class Track extends StatelessWidget {
                                                 Column(
                                                   mainAxisAlignment: MainAxisAlignment.start,
                                                   children: [
-                                                    Icon(Icons.warning,color: Colors.white,)
+                                                    Icon(Icons.warning,color: const Color.fromARGB(255, 245, 101, 101),)
                                                   ],
                                                 ),
                                               ],
@@ -239,7 +232,7 @@ class Track extends StatelessWidget {
                                   margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                   padding: EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: Color(0xFF3458A0),
+                                    color: Color.fromARGB(255, 73, 109, 145),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Row(
@@ -249,17 +242,10 @@ class Track extends StatelessWidget {
                                         width: 80,
                                         child: Column(
                                           children: [
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                shape: BoxShape.circle,
-                                              ),
-                                              padding: EdgeInsets.all(12),
-                                              child: Icon(
-                                                complaint['icon'],
-                                                color: Color(0xFF3458A0),
-                                                size: 32,
-                                              ),
+                                            Icon(
+                                              complaint['icon'],
+                                              color: Colors.white,
+                                              size: 40,
                                             ),
                                             SizedBox(height: 4),
                                             Text(
@@ -364,7 +350,7 @@ class Track extends StatelessWidget {
                                   margin: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                   padding: EdgeInsets.all(12),
                                   decoration: BoxDecoration(
-                                    color: Color(0xFF3458A0),
+                                    color: Color.fromARGB(255, 73, 109, 145),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Row(
@@ -374,17 +360,10 @@ class Track extends StatelessWidget {
                                         width: 80,
                                         child: Column(
                                           children: [
-                                            Container(
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                shape: BoxShape.circle,
-                                              ),
-                                              padding: EdgeInsets.all(12),
-                                              child: Icon(
-                                                complaint['icon'],
-                                                color: Color(0xFF3458A0),
-                                                size: 32,
-                                              ),
+                                            Icon(
+                                              complaint['icon'],
+                                              color: Colors.white,
+                                              size: 40,
                                             ),
                                             SizedBox(height: 4),
                                             Text(
