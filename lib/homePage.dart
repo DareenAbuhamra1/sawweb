@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:sawweb/catagory.dart';
 import 'package:sawweb/profile.dart';
+import 'package:sawweb/report.dart';
+import 'package:sawweb/suggestion.DART';
 import 'package:standard_searchbar/new/standard_search_anchor.dart';
 import 'package:standard_searchbar/new/standard_search_bar.dart';
 import 'package:standard_searchbar/new/standard_suggestion.dart';
@@ -9,6 +12,8 @@ import 'package:standard_searchbar/new/standard_suggestions.dart';
 class Homepage extends StatelessWidget {
   const Homepage({super.key});
   final username = "دارين";
+  
+  get categories => null;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -157,242 +162,8 @@ class Homepage extends StatelessWidget {
                 ],
               ),
             ),
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 25,
-                    top: 25,
-                    right: 15,
-                    bottom: 15,
-                  ),
-                  child: Container(
-                    height: 110,
-                    width: 110,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: const Color.fromARGB(55, 0, 0, 0),
-                        width: 1.4,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.water,
-                          size: 45,
-                          color: Color.fromARGB(255, 10, 40, 95),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          "مياه",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 10, 40, 95),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    right: 15,
-                    top: 25,
-                    bottom: 15,
-                  ),
-                  child: Container(
-                    height: 110,
-                    width: 110,
-                    //color: Colors.amber,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: const Color.fromARGB(55, 0, 0, 0),
-                        width: 1.4,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.power,
-                          size: 45,
-                          color: Color.fromARGB(255, 10, 40, 95),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          "كهرباء",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 10, 40, 95),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    top: 25,
-                    right: 15,
-                    bottom: 15,
-                  ),
-                  child: Container(
-                    height: 110,
-                    width: 110,
-                    //color: Colors.amber,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: const Color.fromARGB(55, 0, 0, 0),
-                        width: 1.4,
-                      ),
-                    ),
-                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.security,
-                          size: 45,
-                          color: Color.fromARGB(255, 10, 40, 95),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          "أمن",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 10, 40, 95),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 25,
-                    right: 15,
-                    bottom: 15,
-                  ),
-                  child: Container(
-                    height: 110,
-                    width: 110,
-                    //color: Colors.amber,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: const Color.fromARGB(55, 0, 0, 0),
-                        width: 1.4,
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          FontAwesomeIcons.seedling,
-                          size: 40,
-                          color: Color.fromARGB(255, 10, 40, 95),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          "زراعة",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 10, 40, 95),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 15, bottom: 15),
-                  child: Container(
-                    height: 110,
-                    width: 110,
-                    //color: Colors.amber,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: const Color.fromARGB(55, 0, 0, 0),
-                        width: 1.4,
-                      ),
-                    ),
-                    child:  Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          FontAwesomeIcons.road,
-                          size: 40,
-                          color: Color.fromARGB(255, 10, 40, 95),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          "طُرقات",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 10, 40, 95),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 15, bottom: 15),
-                  child: Container(
-                    height: 110,
-                    width: 110,
-                    //color: Colors.amber,
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(
-                        color: const Color.fromARGB(55, 0, 0, 0),
-                        width: 1.4,
-                      ),
-                    ),
-                     child:  Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Icon(
-                          Icons.landscape,
-                          size: 40,
-                          color: Color.fromARGB(255, 10, 40, 95),
-                        ),
-                        SizedBox(height: 5),
-                        Text(
-                          "سياحة",
-                          style: TextStyle(
-                            fontSize: 20,
-                            color: Color.fromARGB(255, 10, 40, 95),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  
-                ),
-              ],
-            ),
-            Padding(
+            CategoriesGrid(),
+             Padding(
               padding: const EdgeInsets.only(top: 10, right: 10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -417,6 +188,16 @@ class Homepage extends StatelessWidget {
 
             Padding(
               padding: const EdgeInsets.only(top: 20, right: 20, left: 20),
+              child: GestureDetector(
+                      onTap: () {
+                        // عند الضغط ننتقل للصفحة الثانية مع إرسال اسم التصنيف
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => SuggestionForm()
+                          ),
+                        );
+                      },
               child: Container(
                 height: 105,
                 width: double.infinity,
@@ -424,6 +205,7 @@ class Homepage extends StatelessWidget {
                   color: Color.fromARGB(255, 73, 109, 145),
                   borderRadius: BorderRadius.circular(10),
                 ),
+                
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
@@ -466,6 +248,7 @@ class Homepage extends StatelessWidget {
                   ],
                 ),
               ),
+            ),
             ),
           ],
         ),

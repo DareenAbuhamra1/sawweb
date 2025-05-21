@@ -69,7 +69,7 @@ class Signup extends StatelessWidget {
               ElevatedButton(
                 onPressed: () {
                   Navigator.of(context).pushReplacement(
-                   MaterialPageRoute(builder: (context) => Navbar())
+                   MaterialPageRoute(builder: (context) =>  Navbar())
                   );
                 },
                 child: Text('دخول', style: TextStyle(fontSize: 15)),
