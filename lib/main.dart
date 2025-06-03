@@ -45,7 +45,7 @@ class MainApp extends StatelessWidget {
         'signup': (context) => Signup(),
         'track': (context) => Track(),
         'home':(context) => Homepage(),
-        'chat': (context)=> Chat(),
+        'chat': (context)=> ChatBotPage(),
         'notifications': (context) => Notifications(),
         'navBar':(context)=>Navbar(),
       },
