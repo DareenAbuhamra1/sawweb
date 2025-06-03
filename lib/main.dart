@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:sawweb/Navbar.dart';
+import 'package:sawweb/changePassword.dart';
 import 'package:sawweb/chat.dart';
 import 'package:sawweb/homePage.dart';
 import 'package:sawweb/notifications.dart';
+import 'package:sawweb/profile.dart';
 import 'package:sawweb/signin.dart';
 import 'package:sawweb/signup.dart';
 import 'package:sawweb/track.dart';
@@ -48,6 +50,8 @@ class MainApp extends StatelessWidget {
         'chat': (context)=> Chat(),
         'notifications': (context) => Notifications(),
         'navBar':(context)=>Navbar(),
+      'profile': (context) => Profile(),
+      'changePassword': (context) => ChangePasswordScreen(),
       },
     );
   }
