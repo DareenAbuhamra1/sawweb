@@ -35,7 +35,6 @@ class CategoriesGrid extends StatelessWidget {
                     ),
                     child: GestureDetector(
                       onTap: () {
-                        // عند الضغط ننتقل للصفحة الثانية مع إرسال اسم التصنيف
                         Navigator.push(
                           context,
                           MaterialPageRoute(

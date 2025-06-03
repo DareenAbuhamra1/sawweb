@@ -15,7 +15,7 @@ class _MyHomePageState extends State<Navbar> {
   int _currentIndex = 0;
 
 
-  final List<Widget> _pages = [Homepage(), Track(), Notifications(), Chat()];
+  final List<Widget> _pages = [Homepage(), Track(), Notifications(), ChatBotPage()];
 
   @override
   Widget build(BuildContext context) {
