@@ -2,12 +2,16 @@
     
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    
     <application
         android:label="sawweb"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 
+        <meta-data
+              android:name="com.google.android.geo.API_KEY"
+              android:value="AIzaSyBeMSrrg9jTrQnJ7Vz5ROiPlDnNXF4QIP0"/>
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -22,9 +26,7 @@
               android:name="io.flutter.embedding.android.NormalTheme"
               android:resource="@style/NormalTheme"/>
               
-            <meta-data
-              android:name="com.google.android.geo.API_KEY"
-              android:value="AIza....your_actual_key_here"/>
+            
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>

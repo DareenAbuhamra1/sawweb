@@ -2,10 +2,58 @@ import 'package:flutter/material.dart';
 import 'package:sawweb/signup.dart';
 import 'package:sawweb/Navbar.dart';
 import 'package:sawweb/homePage.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-
-class Signin extends StatelessWidget {
+class Signin extends StatefulWidget {
   const Signin({super.key});
+
+  @override
+  State<Signin> createState() => _SigninState();
+}
+
+class _SigninState extends State<Signin> {
+  final nationalIdController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    nationalIdController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _signIn() async {
+    final nationalId = nationalIdController.text.trim();
+    final password = passwordController.text.trim();
+
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(nationalId)
+          .get();
+
+      if (!userDoc.exists) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('لم يتم العثور على المستخدم')),
+        );
+        return;
+      }
+
+      final email = userDoc['email'];
+
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+
+      Navigator.of(context).pushReplacementNamed('navBar');
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('فشل تسجيل الدخول: ${e.toString()}')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,6 +86,7 @@ class Signin extends StatelessWidget {
               SizedBox(
                 width: 300,
                 child: TextFormField(
+                  controller: nationalIdController,
                   decoration: InputDecoration(
                     labelText: 'الرقم الوطني',
                     labelStyle: TextStyle(
@@ -54,6 +103,7 @@ class Signin extends StatelessWidget {
               SizedBox(
                 width: 300,
                 child: TextFormField(
+                  controller: passwordController,
                   decoration: InputDecoration(
                     labelText: 'الرقم السري',
                     labelStyle: TextStyle(
@@ -69,9 +119,7 @@ class Signin extends StatelessWidget {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('navBar');
-                },
+                onPressed: _signIn,
                 child: Text('دخول', style: TextStyle(fontSize: 15)),
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(300, 50), 

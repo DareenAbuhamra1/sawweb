@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "664129580752",
+    "project_id": "sawweb-f07ba",
+    "storage_bucket": "sawweb-f07ba.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:664129580752:android:e3c5f09c1caf810788f8d5",
+        "android_client_info": {
+          "package_name": "com.example.sawweb"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCX_ABG1d6C-sAMk6XKFI4n5yx6PsIgucM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

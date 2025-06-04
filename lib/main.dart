@@ -1,14 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:sawweb/Navbar.dart';
+import 'package:sawweb/auth_wrapper.dart';
+import 'package:sawweb/changePassword.dart';
 import 'package:sawweb/chat.dart';
 import 'package:sawweb/homePage.dart';
 import 'package:sawweb/notifications.dart';
+import 'package:sawweb/profile.dart';
 import 'package:sawweb/signin.dart';
 import 'package:sawweb/signup.dart';
 import 'package:sawweb/track.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 
-void main() {
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
+  
   runApp(MainApp());
 }
 
@@ -39,7 +48,7 @@ class MainApp extends StatelessWidget {
         primarySwatch: customSwatch,
         useMaterial3: false,
       ),
-      initialRoute: 'signin',
+      home: AuthWrapper(),
       routes: {
         'signin': (context) => Signin(),
         'signup': (context) => Signup(),
@@ -48,6 +57,8 @@ class MainApp extends StatelessWidget {
         'chat': (context)=> Chat(),
         'notifications': (context) => Notifications(),
         'navBar':(context)=>Navbar(),
+        'profile': (context) => Profile(),
+        'changePassword': (context) => ChangePasswordScreen(),
       },
     );
   }

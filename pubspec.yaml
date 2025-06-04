@@ -12,17 +12,24 @@ dependencies:
   standard_searchbar: ^2.0.0
   font_awesome_flutter: ^10.7.0
   google_maps_flutter: ^2.2.0
+  image_picker: ^1.1.2
+  file_picker: ^10.1.9
+  url_launcher: ^6.3.1
+  firebase_core: ^3.13.1
+  firebase_auth: ^5.5.4
+  cloud_firestore: ^5.6.8
+  location: ^5.0.3
 
 
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
-
+  
 flutter:
   uses-material-design: true
   fonts:
     - family: AlexandriaArabic
       fonts:
         - asset: assets/Alexandria.ttf
+        - asset: assets/firestore_formatted_issues.json
