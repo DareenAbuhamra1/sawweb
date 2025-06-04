@@ -3,6 +3,8 @@ import 'package:sawweb/Help.dart';
 import 'package:sawweb/changePassword.dart';
 import 'package:sawweb/notificationSetting.dart';
 import 'package:sawweb/updateprofile.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -12,13 +14,45 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
-  // --- بيانات المستخدم (مثال، سيتم جلبها من قاعدة البيانات لاحقاً) ---
-  final String _userName = "دارين أبو حمرة"; // اسم المستخدم
-  final String _userNationalId = "199XXXXXXX1"; // الرقم الوطني (مثال)
-  final String _email = "dareen@gmail.com";
-  final String _phoneNumber = "079XXXXXXX";
+  // بيانات المستخدم سيتم جلبها من قاعدة البيانات
+  String _userName = '';
+  String _userNationalId = '';
+  String _email = '';
+  String _phoneNumber = '';
   final Color _primaryColor = const Color.fromARGB(255, 10, 40, 95);
   final Color _secondaryTextColor = Colors.grey.shade600;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserData();
+  }
+
+  void _fetchUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user != null) {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .where('email', isEqualTo: user.email)
+          .limit(1)
+          .get();
+      if (userDoc.docs.isNotEmpty) {
+        final data = userDoc.docs.first.data();
+        setState(() {
+          _userName =
+              '${data['first_name']} ${data['second_name']} ${data['middle_name']} ${data['last_name']}';
+          _userNationalId = data['national_id'] ?? "";
+          _email = data['email'] ?? "";
+          _phoneNumber = data['phone_number'] ?? "";
+        });
+        print("Profile loaded for: $_userName");
+      } else {
+        print("User document not found for email: ${user.email}");
+      }
+    } else {
+      print("No user is currently signed in.");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +206,13 @@ class _ProfileState extends State<Profile> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => EditProfileScreen()),
+                    MaterialPageRoute(
+                      builder: (_) => EditProfileScreen(
+                        email: _email,
+                        phone: _phoneNumber,
+                        name:_userName,
+                      ),
+                    ),
                   );
                 },
               ),
@@ -205,11 +245,9 @@ class _ProfileState extends State<Profile> {
                 icon: Icons.help_outline_outlined,
                 title: "المساعدة والدعم",
                 onTap: () {
-                   Navigator.push(
+                  Navigator.push(
                     context,
-                    MaterialPageRoute(
-                      builder: (_) => HelpAndSupportScreen(),
-                    ),
+                    MaterialPageRoute(builder: (_) => HelpAndSupportScreen()),
                   );
                 },
               ),
@@ -300,7 +338,6 @@ class _ProfileState extends State<Profile> {
           backgroundColor: Colors.red.withOpacity(0.05),
         ),
         onPressed: () {
-          //  منطق تسجيل الخروج
           showDialog(
             context: context,
             builder: (BuildContext context) {
@@ -330,15 +367,10 @@ class _ProfileState extends State<Profile> {
                       "تسجيل الخروج",
                       style: TextStyle(color: Colors.red.shade700),
                     ),
-                    onPressed: () {
-                      Navigator.of(context).pop(); // إغلاق الحوار
-                      // تنفيذ عملية تسجيل الخروج الفعلية
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('تم تسجيل الخروج بنجاح (محاكاة)'),
-                        ),
-                      );
-                      // Navigator.of(context).pushReplacementNamed('/login'); // مثال للانتقال لشاشة تسجيل الدخول
+                    onPressed: () async {
+                      Navigator.of(context).pop(); // Close dialog
+                      await FirebaseAuth.instance.signOut();
+                      Navigator.of(context).pushReplacementNamed('signin');
                     },
                   ),
                 ],

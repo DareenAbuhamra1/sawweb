@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:sawweb/signin.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class Signup extends StatelessWidget {
-  const Signup({super.key});
+  Signup({super.key});
+
+  final nationalIdController = TextEditingController();
+  final emailController = TextEditingController();
+  final phoneController = TextEditingController();
+  final passwordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +42,7 @@ class Signup extends StatelessWidget {
               SizedBox(
                 width: 300,
                 child: TextFormField(
+                  controller: nationalIdController,
                   decoration: InputDecoration(
                     labelText: 'الرقم الوطني',
                     labelStyle: TextStyle(
@@ -51,6 +59,7 @@ class Signup extends StatelessWidget {
               SizedBox(
                 width: 300,
                 child: TextFormField(
+                  controller: emailController,
                   decoration: InputDecoration(
                     labelText: 'البريد الالكتروني',
                     labelStyle: TextStyle(
@@ -67,6 +76,7 @@ class Signup extends StatelessWidget {
               SizedBox(
                 width: 300,
                 child: TextFormField(
+                  controller: phoneController,
                   decoration: InputDecoration(
                     labelText: 'رقم الهاتف',
                     labelStyle: TextStyle(
@@ -84,6 +94,7 @@ class Signup extends StatelessWidget {
               SizedBox(
                 width: 300,
                 child: TextFormField(
+                  controller: passwordController,
                   decoration: InputDecoration(
                     labelText: 'الرقم السري',
                     labelStyle: TextStyle(
@@ -98,7 +109,69 @@ class Signup extends StatelessWidget {
               ),
               SizedBox(height: 20),
               ElevatedButton(
-                onPressed: () {},
+                onPressed: () async {
+                  final nationalId = nationalIdController.text.trim();
+                  final email = emailController.text.trim();
+                  final phone = phoneController.text.trim();
+                  final password = passwordController.text.trim();
+
+                  if (nationalId.isEmpty || email.isEmpty || phone.isEmpty || password.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('يرجى تعبئة جميع الحقول')),
+                    );
+                    return;
+                  }
+
+                  final citizenDoc = await FirebaseFirestore.instance
+                      .collection('citizens')
+                      .doc(nationalId)
+                      .get();
+
+                  if (!citizenDoc.exists) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('الرقم الوطني غير موجود في قاعدة بيانات المواطنين')),
+                    );
+                    return;
+                  }
+
+                  final existingUser = await FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(nationalId)
+                      .get();
+
+                  if (existingUser.exists) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('تم إنشاء حساب مسبقًا لهذا الرقم الوطني')),
+                    );
+                    return;
+                  }
+
+                  try {
+                    final userCredential = await FirebaseAuth.instance
+                        .createUserWithEmailAndPassword(email: email, password: password);
+
+                    await FirebaseFirestore.instance
+                        .collection('users')
+                        .doc(nationalId)
+                        .set({
+                      'national_id': nationalId,
+                      'first_name': citizenDoc['first_name'],
+                      'second_name': citizenDoc['second_name'],
+                      'middle_name': citizenDoc['middle_name'],
+                      'last_name': citizenDoc['last_name'],
+                      'email': email,
+                      'phone_number': phone,
+                    });
+
+                    Navigator.of(context).pushReplacement(
+                      MaterialPageRoute(builder: (context) => Signin()),
+                    );
+                  } catch (e) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('فشل في إنشاء الحساب: $e')),
+                    );
+                  }
+                },
                 child: Text('تسجيل', style: TextStyle(fontSize: 15)),
                 style: ElevatedButton.styleFrom(
                   minimumSize: Size(300, 50),

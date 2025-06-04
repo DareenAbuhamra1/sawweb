@@ -1,9 +1,14 @@
 import 'dart:io'; // لاستخدام File مع XFile
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart'; // لإضافة وظيفة اختيار الصورة
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class EditProfileScreen extends StatefulWidget {
-  const EditProfileScreen({super.key});
+  final String email;
+  final String phone;
+  final String name;
+  const EditProfileScreen({super.key, required this.email, required this.phone,required this.name});
 
   @override
   State<EditProfileScreen> createState() => _EditProfileScreenState();
@@ -21,9 +26,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final ImagePicker _picker = ImagePicker();
 
   // بيانات المستخدم الحالية (مثال، سيتم جلبها من قاعدة البيانات)
-  String _currentUserName = "دارين أبو حمرة";
-  String _currentUserEmail = "dareen@gmail.om";
-  String _currentUserPhone = "079XXXXXXX";
+  late String _currentUserName;
+  late String _currentUserEmail;
+  late String _currentUserPhone;
   // String? _currentProfileImageUrl;
 
   final Color _primaryColor = const Color.fromARGB(255, 10, 40, 95);
@@ -41,9 +46,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void initState() {
     super.initState();
+    _currentUserName = widget.name;
     _nameController = TextEditingController(text: _currentUserName);
-    _emailController = TextEditingController(text: _currentUserEmail);
-    _phoneController = TextEditingController(text: _currentUserPhone);
+    _emailController = TextEditingController(text: widget.email);
+    _phoneController = TextEditingController(text: widget.phone);
+    _currentUserEmail = widget.email;
+    _currentUserPhone = widget.phone;
   }
 
   @override
@@ -66,26 +74,17 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('حدث خطأ أثناء اختيار الصورة: $e')),
+          
         );
+        print('حدث خطأ أثناء اختيار الصورة: $e');
       }
     }
   }
 
   void _saveProfileChanges() {
-    if (_formKey.currentState!.validate()) {
-      _formKey.currentState!.save();
-  
-      // String newName = _nameController.text;
-      // String newEmail = _emailController.text;
-      // String newPhone = _phoneController.text;
-      
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('تم حفظ التغييرات بنجاح (محاكاة)')),
-        );
-        Navigator.pop(context); // العودة إلى شاشة الملف الشخصي
-      }
-    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Saving changes is currently disabled.')),
+    );
   }
 
   @override
@@ -150,17 +149,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                 ],
               ),
               const SizedBox(height: 30),
-              _buildTextField(
+              TextFormField(
                 controller: _nameController,
-                labelText: "الاسم الكامل",
-                hintText: "أدخل الاسم الكامل",
-                icon: Icons.person_outline,
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return 'الرجاء إدخال الاسم الكامل';
-                  }
-                  return null;
-                },
+                readOnly: true,
+                textAlign: TextAlign.right,
+                style: const TextStyle(color: Colors.black54, fontSize: 16),
+                decoration: InputDecoration(
+                  labelText: "الاسم الكامل",
+                  hintText: "الاسم الكامل",
+                  hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 15),
+                  labelStyle: TextStyle(color: _primaryColor, fontWeight: FontWeight.w500),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.only(left: 12.0, right: 8.0),
+                    child: Icon(Icons.person_outline, color: _primaryColor.withOpacity(0.7)),
+                  ),
+                  filled: true,
+                  fillColor: _inputFillColor,
+                  border: _inputBorder,
+                  enabledBorder: _inputBorder,
+                  focusedBorder: _inputFocusedBorder,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                ),
+                textDirection: TextDirection.rtl,
               ),
               const SizedBox(height: 20),
               _buildTextField(
