@@ -1,58 +1,18 @@
 import 'package:flutter/material.dart';
-import 'package:sawweb/signup.dart';
-import 'package:sawweb/Navbar.dart';
-import 'package:sawweb/homePage.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
-class Signin extends StatefulWidget {
-  const Signin({super.key});
+class Signine extends StatefulWidget {
+  const Signine({super.key});
 
   @override
-  State<Signin> createState() => _SigninState();
+  State<Signine> createState() => _SignineState();
 }
 
-class _SigninState extends State<Signin> {
-  final nationalIdController = TextEditingController();
-  final passwordController = TextEditingController();
+class _SignineState extends State<Signine> {
+  final TextEditingController jobNumberController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
 
-  @override
-  void dispose() {
-    nationalIdController.dispose();
-    passwordController.dispose();
-    super.dispose();
-  }
-
-  Future<void> _signIn() async {
-    final nationalId = nationalIdController.text.trim();
-    final password = passwordController.text.trim();
-
-    try {
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(nationalId)
-          .get();
-
-      if (!userDoc.exists) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('لم يتم العثور على المستخدم')),
-        );
-        return;
-      }
-
-      final email = userDoc['email'];
-
-      await FirebaseAuth.instance.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
-      Navigator.of(context).pushReplacementNamed('navBar');
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل تسجيل الدخول: ${e.toString()}')),
-      );
-    }
+  void _signIn() {
+    Navigator.pushReplacementNamed(context, 'home_emp');
   }
 
   @override
@@ -77,8 +37,8 @@ class _SigninState extends State<Signin> {
               ),
               Image.asset(
                 'assets/sawweb.png',
-                width: 180,
-                height: 180,
+                width: 250,
+                height: 250,
               ),
               SizedBox(height: 10),
               Text(
@@ -88,7 +48,7 @@ class _SigninState extends State<Signin> {
               ),
               SizedBox(height: 10),
               Text(
-                "فضلًا، أدخل رقمك الوطني لتسجيل الدخول",
+                "فضلًا، أدخل رقمك الوظيفي لتسجيل الدخول",
                 style: TextStyle(fontFamily: 'AlexandriaArabic', fontSize: 15),
                 textAlign: TextAlign.center,
               ),
@@ -96,9 +56,9 @@ class _SigninState extends State<Signin> {
               SizedBox(
                 width: 300,
                 child: TextFormField(
-                  controller: nationalIdController,
+                  controller: jobNumberController,
                   decoration: InputDecoration(
-                    labelText: 'الرقم الوطني',
+                    labelText: 'الرقم الوظيفي',
                     labelStyle: TextStyle(
                       fontSize: 15,
                       fontFamily: 'AlexandriaArabic',
@@ -152,17 +112,6 @@ class _SigninState extends State<Signin> {
                    )),
                 ),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('مستخدم جديد ؟'),
-                  TextButton(onPressed: (){
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Signup()));
-                  }, 
-                  child: Text('إنشاء حساب'),
-                  )
-                ],
-              ),
               Divider(
                 color: Colors.grey, // Line color
                 thickness: 1, // Line thickness
@@ -176,9 +125,9 @@ class _SigninState extends State<Signin> {
                   Text('هل انت '),
                   TextButton(
                     onPressed: () {
-                      // Add navigation or logic for employee access here
+                      Navigator.pushReplacementNamed(context, 'signin');
                     },
-                    child: Text('موظف؟'),
+                    child: Text('مواطن؟'),
                   ),
                 ],
               ),

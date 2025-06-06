@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:sawweb/SuggestionForm.dart';
-import 'package:sawweb/catagory.dart';
-import 'package:sawweb/profile.dart';
-import 'package:sawweb/report.dart';
+import 'package:sawweb/Citizen_UI/SuggestionForm.dart';
+import 'package:sawweb/Citizen_UI/catagory.dart';
+import 'package:sawweb/Citizen_UI/profile.dart';
+import 'package:sawweb/Citizen_UI/report.dart';
 import 'package:standard_searchbar/new/standard_search_anchor.dart';
 import 'package:standard_searchbar/new/standard_search_bar.dart';
 import 'package:standard_searchbar/new/standard_suggestion.dart';

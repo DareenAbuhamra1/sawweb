@@ -2,17 +2,24 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:sawweb/Navbar.dart';
+import 'package:sawweb/Citizen_UI/Navbar.dart';
+import 'package:sawweb/Employee_UI/complaints.dart';
+import 'package:sawweb/Employee_UI/complaintsDetails.dart';
+import 'package:sawweb/Employee_UI/homee.dart';
+import 'package:sawweb/Employee_UI/profilee.dart';
+import 'package:sawweb/Employee_UI/sugg.dart';
+import 'package:sawweb/Employee_UI/suggeDetails.dart';
 import 'package:sawweb/auth_wrapper.dart';
-import 'package:sawweb/changePassword.dart';
-import 'package:sawweb/chat.dart';
-import 'package:sawweb/homePage.dart';
-import 'package:sawweb/notifications.dart';
-import 'package:sawweb/profile.dart';
-import 'package:sawweb/signin.dart';
-import 'package:sawweb/signup.dart';
-import 'package:sawweb/track.dart';
+import 'package:sawweb/Citizen_UI/changePassword.dart';
+import 'package:sawweb/Citizen_UI/chat.dart';
+import 'package:sawweb/Citizen_UI/homePage.dart';
+import 'package:sawweb/Citizen_UI/notifications.dart';
+import 'package:sawweb/Citizen_UI/profile.dart';
+import 'package:sawweb/Citizen_UI/signin.dart';
+import 'package:sawweb/Citizen_UI/signup.dart';
+import 'package:sawweb/Citizen_UI/track.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:sawweb/Employee_UI/signine.dart';
 
 
 void main() async {
@@ -70,6 +77,13 @@ class MainApp extends StatelessWidget {
         'navBar':(context)=>Navbar(),
         'profile': (context) => Profile(),
         'changePassword': (context) => ChangePasswordScreen(),
+        'signin_emp':(context) => Signine(),
+        'home_emp' : (context) =>Homee(),
+        'complaint_emp':(context) => ComplaintsPage(),
+        'complaint_details' : (context) => Complaintsdetails(),
+        'profile_emp' : (context) =>Profilee(),
+        'sugg_emp' : (context) => Sugg(),
+        'sugg_details': (context) => Suggestiondetails()
       },
     );
   }

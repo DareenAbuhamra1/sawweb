@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:sawweb/chat.dart';
-import 'package:sawweb/homePage.dart';
-import 'package:sawweb/notifications.dart';
-import 'package:sawweb/track.dart';
+import 'package:sawweb/Citizen_UI/chat.dart';
+import 'package:sawweb/Citizen_UI/homePage.dart';
+import 'package:sawweb/Citizen_UI/notifications.dart';
+import 'package:sawweb/Citizen_UI/track.dart';
 
 class Navbar extends StatefulWidget {
   static final GlobalKey<_MyHomePageState> navbarKey = GlobalKey<_MyHomePageState>();

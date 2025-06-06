@@ -1,9 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
-import 'package:sawweb/Help.dart';
-import 'package:sawweb/changePassword.dart';
-import 'package:sawweb/notificationSetting.dart';
-import 'package:sawweb/updateprofile.dart';
+import 'package:sawweb/Citizen_UI/Help.dart';
+import 'package:sawweb/Citizen_UI/changePassword.dart';
+import 'package:sawweb/Citizen_UI/notificationSetting.dart';
+import 'package:sawweb/Citizen_UI/updateprofile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -65,54 +65,52 @@ class _ProfileState extends State<Profile> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: const Color.fromARGB(
-        255,
-        242,
-        242,
-        245,
-      ), // لون خلفية فاتح
-      appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(70),
-        child: Material(
-          shadowColor: Colors.black.withOpacity(0.1),
-          borderRadius: const BorderRadius.vertical(
-            bottom: Radius.circular(20),
-          ),
-          child: ClipRRect(
-            child: AppBar(
-              title: Text(
-                "الملف الشخصي",
-                style: TextStyle(
-                  color: _primaryColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF4F4F7),
+          appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(70),
+          child: Material(
+            shadowColor: Colors.black.withOpacity(0.1),
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(20),
+            ),
+            child: ClipRRect(
+              child: AppBar(
+                title: Text(
+                  "الملف الشخصي",
+                  style: TextStyle(
+                    color: const Color.fromARGB(255, 10, 40, 95),
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                  ),
                 ),
+                centerTitle: true,
+                backgroundColor: Colors.white,
+                elevation: 0,
+                iconTheme: IconThemeData(
+                  color:const Color.fromARGB(255, 10, 40, 95),
+                ), // لون أيقونة الرجوع
               ),
-              centerTitle: true,
-              backgroundColor: Colors.white,
-              elevation: 0,
-              iconTheme: IconThemeData(
-                color: _primaryColor,
-              ), // لون أيقونة الرجوع
             ),
           ),
         ),
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(0), // إزالة الحشو الافتراضي للـ ListView
-        children: <Widget>[
-          _buildHeader(),
-          const SizedBox(height: 24),
-          _buildInfoCard(),
-          const SizedBox(height: 24),
-          _buildActionsCard(),
-          const SizedBox(height: 30),
-          _buildLogoutButton(context),
-          const SizedBox(height: 20),
-          _buildAppVersion(),
-          const SizedBox(height: 20),
-        ],
+        body: ListView(
+          padding: const EdgeInsets.all(0), // إزالة الحشو الافتراضي للـ ListView
+          children: <Widget>[
+            _buildHeader(),
+            const SizedBox(height: 24),
+            _buildInfoCard(),
+            const SizedBox(height: 24),
+            _buildActionsCard(),
+            const SizedBox(height: 30),
+            _buildLogoutButton(context),
+            const SizedBox(height: 20),
+            _buildAppVersion(),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }

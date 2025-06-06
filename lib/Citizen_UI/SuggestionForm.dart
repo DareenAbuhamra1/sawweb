@@ -344,7 +344,12 @@ class _SuggestionformState extends State<Suggestionform> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 242, 242, 245),
+      backgroundColor: const Color.fromARGB(
+        255,
+        242,
+        242,
+        245,
+      ), // لون خلفية فاتح
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: Material(
@@ -358,16 +363,32 @@ class _SuggestionformState extends State<Suggestionform> {
               bottom: Radius.circular(20),
             ),
             child: AppBar(
-              leading: BackButton(color: Color.fromARGB(255, 10, 40, 95), onPressed: () => Navigator.of(context).pop()),
+              automaticallyImplyLeading: false, // لمنع الزر التلقائي
               backgroundColor: Colors.white,
-              centerTitle: true,
               elevation: 0,
-              title: const Text(
-                'قدم اقتراحًا',
-                style: TextStyle(
-                  color: Color.fromARGB(255, 10, 40, 95),
-                  fontWeight: FontWeight.bold,
-                ),
+              title: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'قدم اقتراحًا',
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 10, 40, 95),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                      textDirection: TextDirection.rtl,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_forward, color: Color.fromARGB(255, 10, 40, 95)),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),

@@ -11,9 +11,6 @@ class ChangePasswordScreen extends StatefulWidget {
 class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  final TextEditingController _currentPasswordController = TextEditingController();
-  final TextEditingController _newPasswordController = TextEditingController();
-  final TextEditingController _confirmNewPasswordController = TextEditingController();
 
   bool _obscureCurrentPassword = true;
   bool _obscureNewPassword = true;
@@ -33,9 +30,6 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
 
   @override
   void dispose() {
-    _currentPasswordController.dispose();
-    _newPasswordController.dispose();
-    _confirmNewPasswordController.dispose();
     super.dispose();
   }
 
@@ -85,20 +79,43 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: Material(
-          elevation: 2,
-          shadowColor: Colors.black.withOpacity(0.1),
-          borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+          elevation: 4,
+          shadowColor: Colors.black.withOpacity(0.2),
+          borderRadius: const BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
           child: ClipRRect(
-            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(20),
+            ),
             child: AppBar(
-              title: Text(
-                "تغيير كلمة المرور",
-                style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              centerTitle: true,
+              automaticallyImplyLeading: false, // لمنع الزر التلقائي
               backgroundColor: Colors.white,
               elevation: 0,
-              leading: BackButton(color: _primaryColor, onPressed: () => Navigator.of(context).pop()),
+              title: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "تغيير كلمة المرور",
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 10, 40, 95),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                      textDirection: TextDirection.rtl,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_forward, color: Color.fromARGB(255, 10, 40, 95)),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -107,52 +124,58 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
         padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: <Widget>[
-              const SizedBox(height: 20),
-              TextFormField(
-                textAlign: TextAlign.right,
-                decoration: InputDecoration(
-                  labelText: "البريد الإلكتروني",
-                  hintText: "أدخل بريدك الإلكتروني",
-                  labelStyle: TextStyle(color: _primaryColor, fontWeight: FontWeight.w500),
-                  hintStyle: TextStyle(color: Colors.grey, fontSize: 15),
-                  filled: true,
-                  fillColor: _inputFillColor,
-                  border: _inputBorder,
-                  enabledBorder: _inputBorder,
-                  focusedBorder: _inputFocusedBorder,
-                  errorBorder: _inputBorder.copyWith(borderSide: BorderSide(color: Colors.red, width: 1)),
-                  focusedErrorBorder: _inputFocusedBorder.copyWith(borderSide: BorderSide(color: Colors.red, width: 1.5)),
-                  contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-                ),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'الرجاء إدخال البريد الإلكتروني';
-                  }
-                  if (!value.contains('@') || !value.contains('.')) {
-                    return 'الرجاء إدخال بريد إلكتروني صالح';
-                  }
-                  return null;
-                },
-              ),
-              const SizedBox(height: 25),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 400),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  const SizedBox(height: 20),
+                  TextFormField(
+                    textAlign: TextAlign.right,
+                    textDirection: TextDirection.rtl,
+                    decoration: InputDecoration(
+                      labelText: "البريد الإلكتروني",
+                      hintText: "أدخل بريدك الإلكتروني",
+                      labelStyle: TextStyle(color: _primaryColor, fontWeight: FontWeight.w500),
+                      hintStyle: TextStyle(color: Colors.grey, fontSize: 15),
+                      filled: true,
+                      fillColor: _inputFillColor,
+                      border: _inputBorder,
+                      enabledBorder: _inputBorder,
+                      focusedBorder: _inputFocusedBorder,
+                      errorBorder: _inputBorder.copyWith(borderSide: BorderSide(color: Colors.red, width: 1)),
+                      focusedErrorBorder: _inputFocusedBorder.copyWith(borderSide: BorderSide(color: Colors.red, width: 1.5)),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'الرجاء إدخال البريد الإلكتروني';
+                      }
+                      if (!value.contains('@') || !value.contains('.')) {
+                        return 'الرجاء إدخال بريد إلكتروني صالح';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 25),
 
-              // --- زر تحديث كلمة المرور ---
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: _primaryColor,
-                  foregroundColor: Colors.white,
-                  minimumSize: const Size(double.infinity, 52),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                  elevation: 2,
-                  textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
-                ),
-                onPressed: _updatePassword,
-                child: const Text("إرسال رابط إعادة التعيين"),
+                  // --- زر تحديث كلمة المرور ---
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: _primaryColor,
+                      foregroundColor: Colors.white,
+                      minimumSize: const Size(double.infinity, 52),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      elevation: 2,
+                      textStyle: const TextStyle(fontSize: 17, fontWeight: FontWeight.w600),
+                    ),
+                    onPressed: _updatePassword,
+                    child: const Text("إرسال رابط إعادة التعيين"),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

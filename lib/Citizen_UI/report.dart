@@ -288,20 +288,32 @@ class _ReportFormState extends State<Report> {
               bottom: Radius.circular(20),
             ),
             child: AppBar(
-              leading: BackButton(
-                color: Color.fromARGB(255, 10, 40, 95),
-                onPressed: () => Navigator.of(context).pop(),
-              ),
+              automaticallyImplyLeading: false, // لمنع الزر التلقائي
               backgroundColor: Colors.white,
-              centerTitle: true,
               elevation: 0,
-              title: const Text(
-                "قدم شكوى",
-                textAlign: TextAlign.right,
-                style: TextStyle(
-                  color: Color.fromARGB(255, 10, 40, 95),
-                  fontWeight: FontWeight.bold,
-                ),
+              title: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      "قدم شكوى",
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 10, 40, 95),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                      textDirection: TextDirection.rtl,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_forward, color: Color.fromARGB(255, 10, 40, 95)),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                ],
               ),
             ),
           ),
@@ -987,7 +999,6 @@ class _ReportFormState extends State<Report> {
                                         }
                                       }
                                       Navigator.of(context).pop();
-                                      // --- End: Navigate to main tab after dialog closes ---
                                     },
                                     child: Text('موافق'),
                                   ),
