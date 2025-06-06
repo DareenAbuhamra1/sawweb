@@ -83,20 +83,43 @@ class _HelpAndSupportScreenState extends State<HelpAndSupportScreen> {
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(70),
         child: Material(
-          elevation: 2,
-          shadowColor: Colors.black.withOpacity(0.1),
-          borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+          elevation: 4,
+          shadowColor: Colors.black.withOpacity(0.2),
+          borderRadius: const BorderRadius.vertical(
+            bottom: Radius.circular(20),
+          ),
           child: ClipRRect(
-            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(20)),
+            borderRadius: const BorderRadius.vertical(
+              bottom: Radius.circular(20),
+            ),
             child: AppBar(
-              title: Text(
-                "المساعدة والدعم",
-                style: TextStyle(color: _primaryColor, fontWeight: FontWeight.bold, fontSize: 20),
-              ),
-              centerTitle: true,
+              automaticallyImplyLeading: false, // لمنع الزر التلقائي
               backgroundColor: Colors.white,
               elevation: 0,
-              leading: BackButton(color: _primaryColor, onPressed: () => Navigator.of(context).pop()),
+              title: Stack(
+                alignment: Alignment.center,
+                children: [
+                  const Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                      'المساعدة والدعم',
+                      style: TextStyle(
+                        color: Color.fromARGB(255, 10, 40, 95),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 20,
+                      ),
+                      textDirection: TextDirection.rtl,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: IconButton(
+                      icon: Icon(Icons.arrow_forward, color: Color.fromARGB(255, 10, 40, 95)),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ),
         ),
