@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:sawweb/Help.dart';
 import 'package:sawweb/changePassword.dart';
@@ -5,6 +6,7 @@ import 'package:sawweb/notificationSetting.dart';
 import 'package:sawweb/updateprofile.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -51,6 +53,13 @@ class _ProfileState extends State<Profile> {
       }
     } else {
       print("No user is currently signed in.");
+    }
+  }
+
+  Future<void> signOutAndRedirect() async {
+    await FirebaseAuth.instance.signOut();
+    if (mounted) {
+      Navigator.of(context).pushNamedAndRemoveUntil('signin', (route) => false);
     }
   }
 
@@ -242,6 +251,20 @@ class _ProfileState extends State<Profile> {
               ),
               _buildDivider(),
               _buildActionTile(
+                icon: Icons.star_rate_outlined,
+                title: "قيّم صوِّب",
+                onTap: () {
+                  String url;
+                  if (Platform.isIOS) {
+                    url = 'https://apps.apple.com/app/id6479522329';
+                  } else {
+                    url = 'https://play.google.com/store/apps/details?id=com.sawweb.sawweb';
+                  }
+                  launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+                },
+              ),
+              _buildDivider(),
+              _buildActionTile(
                 icon: Icons.help_outline_outlined,
                 title: "المساعدة والدعم",
                 onTap: () {
@@ -264,22 +287,25 @@ class _ProfileState extends State<Profile> {
     required String subtitle,
     VoidCallback? onTap,
   }) {
-    return ListTile(
-      leading: Icon(icon, color: _primaryColor, size: 26),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontWeight: FontWeight.w600,
-          color: _primaryColor,
-          fontSize: 15,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: ListTile(
+        leading: Icon(icon, color: _primaryColor, size: 26),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontWeight: FontWeight.w600,
+            color: _primaryColor,
+            fontSize: 15,
+          ),
         ),
+        subtitle: Text(
+          subtitle,
+          style: TextStyle(fontSize: 14, color: _secondaryTextColor),
+        ),
+        onTap: onTap,
+        dense: true,
       ),
-      subtitle: Text(
-        subtitle,
-        style: TextStyle(fontSize: 14, color: _secondaryTextColor),
-      ),
-      onTap: onTap,
-      dense: true,
     );
   }
 
@@ -288,22 +314,25 @@ class _ProfileState extends State<Profile> {
     required String title,
     VoidCallback? onTap,
   }) {
-    return ListTile(
-      leading: Icon(icon, color: _primaryColor, size: 26),
-      title: Text(
-        title,
-        style: TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w500,
-          color: Colors.black87,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: ListTile(
+        leading: Icon(icon, color: _primaryColor, size: 26),
+        title: Text(
+          title,
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w500,
+            color: Colors.black87,
+          ),
         ),
+        trailing: Icon(
+          Icons.arrow_forward_ios,
+          size: 16,
+          color: Colors.grey.shade400,
+        ),
+        onTap: onTap,
       ),
-      trailing: Icon(
-        Icons.arrow_forward_ios,
-        size: 16,
-        color: Colors.grey.shade400,
-      ),
-      onTap: onTap,
     );
   }
 
@@ -369,8 +398,7 @@ class _ProfileState extends State<Profile> {
                     ),
                     onPressed: () async {
                       Navigator.of(context).pop(); // Close dialog
-                      await FirebaseAuth.instance.signOut();
-                      Navigator.of(context).pushReplacementNamed('signin');
+                      await signOutAndRedirect();
                     },
                   ),
                 ],

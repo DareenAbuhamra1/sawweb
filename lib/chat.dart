@@ -192,7 +192,6 @@ Timer(const Duration(milliseconds: 800), () {
               centerTitle: true,
               backgroundColor: Colors.white,
               elevation: 0,
-              leading: BackButton(color: _primaryColor, onPressed: () => Navigator.of(context).pop()),
             ),
           ),
         ),

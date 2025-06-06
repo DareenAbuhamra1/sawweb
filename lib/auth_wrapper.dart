@@ -17,7 +17,7 @@ class AuthWrapper extends StatelessWidget {
             body: Center(child: CircularProgressIndicator()),
           );
         } else if (snapshot.hasData && snapshot.data != null) {
-          return const Navbar();
+          return Navbar();
         } else {
           return const Signin();
         }

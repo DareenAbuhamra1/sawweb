@@ -17,7 +17,8 @@ class Signup extends StatelessWidget {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         body: Center(
-          child: Column(
+          child: SingleChildScrollView(
+            child: Column(
             mainAxisAlignment:
                 MainAxisAlignment.center, // Optional: Center vertically
             children: [
@@ -95,6 +96,7 @@ class Signup extends StatelessWidget {
                 width: 300,
                 child: TextFormField(
                   controller: passwordController,
+                  obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'الرقم السري',
                     labelStyle: TextStyle(
@@ -255,6 +257,7 @@ class Signup extends StatelessWidget {
             ],
           ),
         ),
+      ),
       ),
     );
   }

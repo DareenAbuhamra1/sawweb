@@ -61,14 +61,24 @@ class _SigninState extends State<Signin> {
       textDirection: TextDirection.rtl,
       child: Scaffold(
         body: Center(
-          child: Column(
-            mainAxisAlignment:
-                MainAxisAlignment.center, // Optional: Center vertically
-            children: [
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment:
+                  MainAxisAlignment.center, // Optional: Center vertically
+              children: [
               Text(
                 "Sawweb",
-                style: TextStyle(fontFamily: 'AlexandriaArabic', fontSize: 30),
+                style: TextStyle(
+                  fontFamily: 'AlexandriaArabic',
+                  fontSize: 30,
+                  color: Color.fromARGB(255, 10, 40, 95),
+                ),
                 textAlign: TextAlign.center,
+              ),
+              Image.asset(
+                'assets/sawweb.png',
+                width: 180,
+                height: 180,
               ),
               SizedBox(height: 10),
               Text(
@@ -104,6 +114,7 @@ class _SigninState extends State<Signin> {
                 width: 300,
                 child: TextFormField(
                   controller: passwordController,
+                  obscureText: true,
                   decoration: InputDecoration(
                     labelText: 'الرقم السري',
                     labelStyle: TextStyle(
@@ -113,7 +124,6 @@ class _SigninState extends State<Signin> {
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
                     ),
-                    
                   ),
                 ),
               ),
@@ -130,7 +140,9 @@ class _SigninState extends State<Signin> {
                 padding: const EdgeInsets.fromLTRB(50, 0, 0, 0),
                 child: Align(
                   alignment: Alignment.centerLeft ,
-                  child: TextButton(onPressed: (){},
+                  child: TextButton(onPressed: (){
+                    Navigator.pushNamed(context, "changePassword");
+                  },
                    child: Text('نسيت كلمة السر ؟',
                    style: TextStyle(
                     fontSize: 12,
@@ -157,7 +169,22 @@ class _SigninState extends State<Signin> {
                 indent: 30, // Space before the line
                 endIndent: 30, // Space after the line
               ),
-            ],
+              SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('هل انت '),
+                  TextButton(
+                    onPressed: () {
+                      // Add navigation or logic for employee access here
+                    },
+                    child: Text('موظف؟'),
+                  ),
+                ],
+              ),
+              ],
+            ),
+
           ),
         ),
       ),

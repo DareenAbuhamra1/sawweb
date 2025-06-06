@@ -1,13 +1,79 @@
-import 'dart:io'; // لاستخدام كائن File عند رفع الملفات
-
+import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:geocoding/geocoding.dart';
 
+class SuggestionModel {
+  final String title;
+  final String description;
+  final String category;
+  final LatLng? location;
+  final String? photoPath;
+  final List<String>? attachments;
+  final Timestamp timestamp;
+  final String fullName;
+  final String nationalId;
+  final int? rate;
+  final String? placeName;
 
+  SuggestionModel({
+    required this.title,
+    required this.description,
+    required this.category,
+    required this.timestamp,
+    required this.fullName,
+    required this.nationalId,
+    this.location,
+    this.photoPath,
+    this.attachments,
+    this.rate,
+    this.placeName,
+  });
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'description': description,
+      'category': category,
+      'timestamp': timestamp,
+      'full_name': fullName,
+      'national_id': nationalId,
+      'location': location != null
+          ? {'latitude': location!.latitude, 'longitude': location!.longitude}
+          : null,
+      'photo_path': photoPath,
+      'attachments': attachments,
+      'rate': rate,
+      'place_name': placeName,
+    };
+  }
+
+  factory SuggestionModel.fromJson(Map<String, dynamic> json) {
+    final loc = json['location'];
+    return SuggestionModel(
+      title: json['title'],
+      description: json['description'],
+      category: json['category'],
+      timestamp: json['timestamp'],
+      fullName: json['full_name'],
+      nationalId: json['national_id'],
+      location: loc != null
+          ? LatLng(loc['latitude'], loc['longitude'])
+          : null,
+      photoPath: json['photo_path'],
+      attachments: (json['attachments'] as List?)?.map((e) => e.toString()).toList(),
+      rate: json['rate'],
+      placeName: json['place_name'],
+    );
+  }
+}
 class Suggestionform extends StatefulWidget {
   String? categoryName;
-  Suggestionform({super.key, this.categoryName}); // تم تعديل الكونستركتور ليشمل categoryName
+  Suggestionform({super.key, this.categoryName});
   @override
   State<Suggestionform> createState() => _SuggestionformState();
 }
@@ -17,28 +83,38 @@ class _SuggestionformState extends State<Suggestionform> {
   TextEditingController descriptionController = TextEditingController();
   List<PlatformFile>? _attachments;
   String? selectedCategory;
-  String? selectedIssue; // هذا المتغير غير مستخدم حالياً في الواجهة
+  String? selectedIssue;
   XFile? _selectedImage;
   final ImagePicker _picker = ImagePicker();
- // LatLng? _suggestionLocation; // لتخزين الموقع المختار من الخريطة أو خدمة الموقع
 
-  // --- متغيرات لحالة التحميل ---
-  // bool _isUploading = false;
-  // --- نهاية متغيرات حالة التحميل ---
+  // Location for suggestion (nullable)
+  LatLng? _suggestionLocation;
+
+  // Method to update suggestion location
+  void _updateSuggestionLocation(LatLng location) {
+    setState(() {
+      _suggestionLocation = location;
+    });
+  }
+
+  // Add this method to handle Firebase submission
+  Future<void> _submitSuggestion(SuggestionModel suggestion) async {
+    await FirebaseFirestore.instance.collection('suggestions').add(suggestion.toJson());
+  }
 
   Future<void> _pickAttachments() async {
     try {
       FilePickerResult? result = await FilePicker.platform.pickFiles(
         allowMultiple: true,
         type: FileType.custom,
-        allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx', 'txt'], // تم إضافة jpeg, docx, txt
+        allowedExtensions: ['jpg', 'jpeg', 'png', 'pdf', 'doc', 'docx', 'txt'],
       );
 
       if (result != null) {
         setState(() {
           _attachments = result.files;
         });
-        if (mounted) { // التأكد أن الويدجت ما زال في الشجرة
+        if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('تم إضافة ${_attachments!.length} مرفقات بنجاح!')),
           );
@@ -96,155 +172,174 @@ class _SuggestionformState extends State<Suggestionform> {
     'السياحة',
     'النظافة',
     'كهرباء',
-    'مياه وصرف صحي', // مثال لإضافة تصنيف
-    'أخرى' // مثال لإضافة تصنيف
+    'مياه وصرف صحي',
+    'أخرى'
   ];
 
 
   @override
   void initState() {
     super.initState();
-    // إذا كان widget.categoryName غير فارغ، يتم تعيينه كقيمة أولية
-    // وإلا، إذا كانت القائمة SuggestionTypes غير فارغة، يتم اختيار أول عنصر كقيمة افتراضية
     if (widget.categoryName != null && SuggestionTypes.contains(widget.categoryName)) {
       selectedCategory = widget.categoryName;
     } else if (SuggestionTypes.isNotEmpty) {
-      // selectedCategory = SuggestionTypes[0]; // يمكنك جعل أول عنصر هو الافتراضي إذا أردت
+    }
+  }
+  Future<void> _handleSubmit() async {
+    final email = FirebaseAuth.instance.currentUser?.email;
+    if (email == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('تعذر تحديد البريد الإلكتروني للمستخدم.')));
+      return;
+    }
+
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('users')
+        .where('email', isEqualTo: email)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text('خطأ في تحميل البيانات'),
+          content: Text('تعذر جلب بيانات المستخدم. يرجى المحاولة لاحقًا.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: Text('موافق'),
+            ),
+          ],
+        ),
+      );
+      return;
+    }
+
+    final userData = querySnapshot.docs.first.data();
+
+    final fullName = '${userData['first_name']} ${userData['second_name']} ${userData['middle_name']} ${userData['last_name']}';
+    final nationalId = userData['national_id'] ?? '';
+
+    String? placeName;
+    if (_suggestionLocation != null) {
+      try {
+        List<Placemark> placemarks = await placemarkFromCoordinates(
+          _suggestionLocation!.latitude,
+          _suggestionLocation!.longitude,
+        );
+        if (placemarks.isNotEmpty) {
+          final place = placemarks.first;
+          placeName = '${place.street}, ${place.locality}, ${place.country}';
+        }
+      } catch (e) {
+        print('فشل تحويل الإحداثيات إلى عنوان: $e');
+      }
+    }
+
+    final Timestamp nowTimestamp = Timestamp.now();
+    final suggestion = SuggestionModel(
+      title: titleController.text,
+      description: descriptionController.text,
+      category: selectedCategory ?? '',
+      timestamp: nowTimestamp,
+      fullName: fullName,
+      nationalId: nationalId,
+      location: _suggestionLocation,
+      placeName: placeName,
+      photoPath: _selectedImage?.path,
+      attachments: _attachments?.map((e) => e.path!).toList(),
+      rate: null,
+    );
+
+    try {
+      await _submitSuggestion(suggestion);
+
+      // Save notification to user's notificationList subcollection
+      final notification = {
+        'title': 'تم تقديم المقترح',
+        'body': suggestion.title,
+        'color': 'amber',
+        'date': DateTime.now().toIso8601String(),
+        'icon': 'sync',
+        'location': suggestion.placeName ?? '',
+        'read': false,
+        'category': suggestion.category,
+        'timestamp': Timestamp.fromDate(DateTime.now()),
+      };
+      final userDoc = querySnapshot.docs.first.reference;
+      await userDoc.collection('notificationList').add(notification);
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('تم إرسال الاقتراح بنجاح.')));
+        int selectedRating = 0;
+        await showDialog(
+          context: context,
+          builder: (BuildContext dialogContext) {
+            return StatefulBuilder(
+              builder: (context, setState) {
+                return AlertDialog(
+                  title: Center(child: Text('شكرًا لمساهمتك')),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text('تم استلام اقتراحك بنجاح وهو قيد المراجعة.'),
+                      SizedBox(height: 12),
+                      Text('كيف تُقيّم تجربة تقديم الاقتراح؟'),
+                      SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: List.generate(5, (index) {
+                          return IconButton(
+                            icon: Icon(
+                              index < selectedRating
+                                  ? Icons.star
+                                  : Icons.star_border,
+                              color: Colors.amber,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                selectedRating = index + 1;
+                              });
+                            },
+                          );
+                        }),
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          Navigator.of(dialogContext).pop();
+                          final query = await FirebaseFirestore.instance
+                              .collection('suggestions')
+                              .where('title', isEqualTo: suggestion.title)
+                              .where('national_id', isEqualTo: suggestion.nationalId)
+                              .where('timestamp', isEqualTo: suggestion.timestamp)
+                              .limit(1)
+                              .get();
+
+                          if (query.docs.isNotEmpty) {
+                            await query.docs.first.reference.update({'rate': selectedRating});
+                          }
+                        },
+                        child: Text('موافق'),
+                      ),
+                    ),
+                  ],
+                );
+              },
+            );
+          },
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('فشل في إرسال الاقتراح: $e')));
+      }
     }
   }
 
-  // --- دوال لرفع الملفات إلى Firebase Storage (كـ تعليقات) ---
-  // Future<String?> _uploadFileToFirebase(File file, String pathInStorage) async {
-  //   try {
-  //     final ref = firebase_storage.FirebaseStorage.instance.ref(pathInStorage);
-  //     final uploadTask = ref.putFile(file);
-  //     final snapshot = await uploadTask.whenComplete(() => {});
-  //     final downloadUrl = await snapshot.ref.getDownloadURL();
-  //     return downloadUrl;
-  //   } catch (e) {
-  //     print('Firebase Storage - Error uploading file ($pathInStorage): $e');
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('خطأ في رفع الملف: ${file.path.split('/').last}')),
-  //       );
-  //     }
-  //     return null;
-  //   }
-  // }
-  // --- نهاية دوال الرفع ---
-
-
-  // --- دالة لإرسال بيانات الاقتراح إلى Firestore (كـ تعليقات) ---
-  // Future<void> _submitSuggestionToFirebase() async {
-  //   if (titleController.text.isEmpty) {
-  //     if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('الرجاء إدخال عنوان الاقتراح.')));
-  //     return;
-  //   }
-  //   if (selectedCategory == null) {
-  //     if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('الرجاء اختيار تصنيف الاقتراح.')));
-  //     return;
-  //   }
-  //   if (descriptionController.text.isEmpty) {
-  //      if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('الرجاء إدخال وصف الاقتراح.')));
-  //     return;
-  //   }
-
-  //   setState(() {
-  //     _isUploading = true;
-  //   });
-
-  //   String? imageUrl;
-  //   List<String> attachmentUrls = [];
-
-  //   // 1. رفع الصورة المختارة (إن وجدت)
-  //   if (_selectedImage != null) {
-  //     File imageFile = File(_selectedImage!.path);
-  //     String imagePath = 'suggestion_images/${DateTime.now().millisecondsSinceEpoch}_${_selectedImage!.name}';
-  //     imageUrl = await _uploadFileToFirebase(imageFile, imagePath);
-  //   }
-
-  //   // 2. رفع المرفقات (إن وجدت)
-  //   if (_attachments != null && _attachments!.isNotEmpty) {
-  //     for (PlatformFile platformFile in _attachments!) {
-  //       if (platformFile.path != null) {
-  //         File file = File(platformFile.path!);
-  //         String attachmentPath = 'suggestion_attachments/${DateTime.now().millisecondsSinceEpoch}_${platformFile.name}';
-  //         String? url = await _uploadFileToFirebase(file, attachmentPath);
-  //         if (url != null) {
-  //           attachmentUrls.add(url);
-  //         }
-  //       }
-  //     }
-  //   }
-    
-  //   // 3. تجهيز بيانات الاقتراح
-  //   Map<String, dynamic> suggestionData = {
-  //     'title': titleController.text,
-  //     'category': selectedCategory,
-  //     'description': descriptionController.text,
-  //     'imageUrl': imageUrl, // قد يكون null
-  //     'attachmentUrls': attachmentUrls, // قد تكون قائمة فارغة
-  //     'timestamp': FieldValue.serverTimestamp(), // وقت إنشاء الاقتراح على الخادم
-  //     // 'userId': FirebaseAuth.instance.currentUser?.uid, // مثال إذا كان هناك مستخدم مسجل دخوله
-  //   };
-
-  //   // إضافة بيانات الموقع إذا كانت متوفرة
-  //   if (_suggestionLocation != null) {
-  //     suggestionData['location'] = GeoPoint(_suggestionLocation!.latitude, _suggestionLocation!.longitude);
-  //     // أو يمكنك تخزينها كـ map:
-  //     // suggestionData['location'] = {
-  //     //   'latitude': _suggestionLocation!.latitude,
-  //     //   'longitude': _suggestionLocation!.longitude,
-  //     // };
-  //   }
-
-  //   // 4. إرسال البيانات إلى Firestore
-  //   try {
-  //     await FirebaseFirestore.instance.collection('suggestions').add(suggestionData);
-  //     if (mounted) {
-  //        ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('تم إرسال الاقتراح بنجاح!')),
-  //       );
-  //       // يمكنك هنا إعادة تعيين الحقول أو الانتقال إلى شاشة أخرى
-  //       titleController.clear();
-  //       descriptionController.clear();
-  //       setState(() {
-  //         _selectedImage = null;
-  //         _attachments = null;
-  //         _suggestionLocation = null;
-  //         // selectedCategory = SuggestionTypes.isNotEmpty ? SuggestionTypes[0] : null; // إعادة تعيين التصنيف
-  //       });
-  //       // Navigator.pop(context); // للرجوع للخلف مثلاً
-  //     }
-  //   } catch (e) {
-  //     print('Firestore - Error adding suggestion: $e');
-  //     if (mounted) {
-  //       ScaffoldMessenger.of(context).showSnackBar(
-  //         SnackBar(content: Text('حدث خطأ أثناء إرسال الاقتراح: $e')),
-  //       );
-  //     }
-  //   } finally {
-  //     if (mounted) {
-  //        setState(() {
-  //         _isUploading = false;
-  //       });
-  //     }
-  //   }
-  // }
-  // --- نهاية دالة إرسال الاقتراح ---
-
-  // --- دالة لتحديث الموقع (مثال، يمكنك ربطها بزر الموقع أو الخريطة) ---
-  // void _updateSuggestionLocation(LatLng location) {
-  //   setState(() {
-  //     _suggestionLocation = location;
-  //   });
-  //   if(mounted) {
-  //      ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('تم تحديد الموقع: ${location.latitude}, ${location.longitude}')),
-  //     );
-  //   }
-  // }
-  // --- نهاية دالة تحديث الموقع ---
 
   @override
   Widget build(BuildContext context) {
@@ -343,11 +438,11 @@ class _SuggestionformState extends State<Suggestionform> {
                           .map(
                             (c) => DropdownMenuItem(
                               value: c,
-                              child: Align( // لمحاذاة النص إلى اليمين داخل كل عنصر
+              child: Align(
                                 alignment: Alignment.centerRight,
                                 child: Text(
                                   c,
-                                  // textAlign: TextAlign.right, // هذا قد لا يعمل كما هو متوقع هنا
+                                  
                                   style: TextStyle(
                                     color: Color.fromARGB(255, 10, 40, 95), // لون النص للعناصر
                                   ),
@@ -363,10 +458,9 @@ class _SuggestionformState extends State<Suggestionform> {
                   },
                   decoration: const InputDecoration(
                     border: InputBorder.none,
-                    // contentPadding: EdgeInsets.symmetric(horizontal: 0), // إزالة الـ padding لتوسيط أفضل
                   ),
-                  isExpanded: true, // لجعل العنصر يملأ العرض
-                  icon: Icon(Icons.arrow_drop_down, color: Color.fromARGB(255, 10, 40, 95)), // لون السهم
+                  isExpanded: true,
+                  icon: Icon(Icons.arrow_drop_down, color: Color.fromARGB(255, 10, 40, 95)),
                 ),
               ),
             ),
@@ -381,7 +475,7 @@ class _SuggestionformState extends State<Suggestionform> {
             ),
             SizedBox(height: 10),
             Row(
-              crossAxisAlignment: CrossAxisAlignment.start, // لمحاذاة العناصر في الأعلى
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Expanded(
                   flex: 1,
@@ -389,7 +483,7 @@ class _SuggestionformState extends State<Suggestionform> {
                     onTap: _attachImage,
                     child: Container(
                       height: 126,
-                      // width: 109, // الـ Expanded سيتعامل مع العرض
+                      
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
                         boxShadow: [
@@ -407,13 +501,13 @@ class _SuggestionformState extends State<Suggestionform> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 Icon(
-                                  Icons.image_outlined, // أيقونة أوضح قليلاً
+                                  Icons.image_outlined,
                                   size: 40,
                                   color: Color.fromARGB(255, 10, 40, 95),
                                 ),
                                 SizedBox(height: 8),
                                 Text(
-                                  'ارفق صورة', // تم تعديل النص قليلاً
+                                  'ارفق صورة',
                                   textAlign: TextAlign.center,
                                   style: TextStyle(
                                     color: Color.fromARGB(153, 93, 97, 104),
@@ -422,7 +516,7 @@ class _SuggestionformState extends State<Suggestionform> {
                               ],
                             ),
                           )
-                        : ClipRRect( // لعرض الصورة المختارة مع حواف دائرية
+                        : ClipRRect(
                             borderRadius: BorderRadius.circular(8.0),
                             child: Image.file(
                               File(_selectedImage!.path),
@@ -438,7 +532,7 @@ class _SuggestionformState extends State<Suggestionform> {
                 Expanded(
                   flex: 2,
                   child: Container(
-                    height: 126, // تحديد ارتفاع مماثل لمربع الصورة
+                    height: 126,
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(8),
@@ -452,9 +546,9 @@ class _SuggestionformState extends State<Suggestionform> {
                     ),
                     child: TextField(
                       controller: descriptionController,
-                      maxLines: null, // للسماح بعدة أسطر ديناميكياً
-                      expands: true, // لجعل الحقل يملأ المساحة المتاحة
-                      textAlignVertical: TextAlignVertical.top, // لبدء الكتابة من الأعلى
+                      maxLines: null,
+                      expands: true,
+                      textAlignVertical: TextAlignVertical.top,
                       textAlign: TextAlign.right,
                       decoration: InputDecoration(
                         hintText: 'وصف الاقتراح بالتفصيل',
@@ -470,7 +564,7 @@ class _SuggestionformState extends State<Suggestionform> {
               ],
             ),
             SizedBox(height: 16),
-             // --- عرض المرفقات المختارة ---
+            
             if (_attachments != null && _attachments!.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8.0),
@@ -481,14 +575,14 @@ class _SuggestionformState extends State<Suggestionform> {
               ),
             if (_attachments != null && _attachments!.isNotEmpty)
               Container(
-                height: 80, // ارتفاع لعرض قائمة المرفقات أفقياً
+                height: 80,
                 child: ListView.builder(
-                  scrollDirection: Axis.horizontal, // عرض أفقي للمرفقات
+                  scrollDirection: Axis.horizontal,
                   itemCount: _attachments!.length,
                   itemBuilder: (context, index) {
                     final file = _attachments![index];
                     return Container(
-                      width: 100, // عرض كل مرفق
+                      width: 100,
                       margin: EdgeInsets.only(right: 8.0),
                       decoration: BoxDecoration(
                         color: Colors.white,
@@ -524,25 +618,24 @@ class _SuggestionformState extends State<Suggestionform> {
                 ),
               ),
             if (_attachments != null && _attachments!.isNotEmpty) SizedBox(height: 16),
-            // --- نهاية عرض المرفقات ---
             Container(
               width: double.infinity,
               child: ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 10, 40, 95).withOpacity(0.1), // لون خلفية مختلف قليلاً
-                  foregroundColor: Color.fromARGB(255, 10, 40, 95), // لون الأيقونة والنص
+                  backgroundColor: Color.fromARGB(255, 10, 40, 95).withOpacity(0.1),
+                  foregroundColor: Color.fromARGB(255, 10, 40, 95),
                   elevation: 0,
-                  side: BorderSide(color: Color.fromARGB(255, 10, 40, 95)), // إطار للزر
+                  side: BorderSide(color: Color.fromARGB(255, 10, 40, 95)),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                 ),
                 onPressed: _pickAttachments,
-                icon: Icon(Icons.attach_file_outlined), // أيقونة مختلفة
+                icon: Icon(Icons.attach_file_outlined),
                 label: Text('إضافة مرفقات أخرى (pdf, doc, ..)'),
               ),
             ),
             SizedBox(height: 16),
             Text(
-              'تحديد الموقع (اختياري)',
+              'تحديد الموقع',
                style: TextStyle(
                 fontWeight: FontWeight.bold,
                 color: Color.fromARGB(255, 10, 40, 95),
@@ -555,71 +648,59 @@ class _SuggestionformState extends State<Suggestionform> {
                 border: Border.all(color: Colors.grey.shade400),
                 borderRadius: BorderRadius.circular(8),
               ),
-              child: ClipRRect( // لجعل الخريطة بحواف دائرية
+              child: ClipRRect(
                 borderRadius: BorderRadius.circular(8.0),
-                // --- كود الخريطة (مثال، يحتاج إلى تفعيل وإعداد) ---
-                // child: _suggestionLocation == null 
-                // ? Center(child: Text('لم يتم تحديد موقع بعد.\nاضغط على زر "تحديد الموقع الحالي" أو اختر من الخريطة.', textAlign: TextAlign.center, style: TextStyle(color: Colors.grey)))
-                // : GoogleMap(
-                //   initialCameraPosition: CameraPosition(
-                //     target: _suggestionLocation!, // استخدام الموقع المحدد كمركز
-                //     zoom: 15,
-                //   ),
-                //   markers: {
-                //     if (_suggestionLocation != null)
-                //       Marker(
-                //         markerId: MarkerId('suggestionLocation'),
-                //         position: _suggestionLocation!,
-                //       ),
-                //   },
-                //   onTap: (LatLng location) { // للسماح للمستخدم بالنقر على الخريطة لتحديد موقع
-                //     _updateSuggestionLocation(location);
-                //   },
-                //   // onMapCreated: (controller) {}, // يمكنك استخدام controller إذا احتجت
-                // ),
-                // --- نهاية كود الخريطة ---
-                // --- مؤقتاً حتى يتم تفعيل الخريطة ---
-                child: Center(child: Text('الخريطة ستعرض هنا', style: TextStyle(color: Colors.grey[600]))),
-              )
+                child: _suggestionLocation == null
+                    ? GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: LatLng(31.9539, 35.9106),
+                          zoom: 12,
+                        ),
+                        onTap: (LatLng location) {
+                          _updateSuggestionLocation(location);
+                        },
+                        markers: {},
+                        myLocationButtonEnabled: false,
+                        zoomControlsEnabled: false,
+                      )
+                    : GoogleMap(
+                        initialCameraPosition: CameraPosition(
+                          target: _suggestionLocation!,
+                          zoom: 15,
+                        ),
+                        markers: {
+                          Marker(
+                            markerId: MarkerId('selected'),
+                            position: _suggestionLocation!,
+                          ),
+                        },
+                        onTap: (LatLng location) {
+                          _updateSuggestionLocation(location);
+                        },
+                        myLocationButtonEnabled: false,
+                        zoomControlsEnabled: false,
+                      ),
+              ),
             ),
             Align(
               alignment: Alignment.centerRight,
               child: TextButton.icon(
                 onPressed: () {
-                  // --- كود للحصول على الموقع الحالي للمستخدم (مثال باستخدام Geolocator) ---
-                  // final position = await Geolocator.getCurrentPosition();
-                  // _updateSuggestionLocation(LatLng(position.latitude, position.longitude));
-                  // --- نهاية كود الحصول على الموقع ---
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('سيتم هنا تفعيل خاصية تحديد الموقع الحالي.')));
+                 
                 },
                 icon: Icon(Icons.my_location, color: Color.fromARGB(255, 10, 40, 95)),
                 label: Text('تحديد الموقع الحالي', style: TextStyle(color: Color.fromARGB(255, 10, 40, 95))),
               ),
             ),
 
-            SizedBox(height: 24), // زيادة المسافة قبل زر الإرسال
-            // --- زر الإرسال ---
-            // if (_isUploading)
-            //   Center(child: CircularProgressIndicator(color: Color.fromARGB(255, 10, 40, 95))),
-            // if (!_isUploading)
+            SizedBox(height: 24),
               ElevatedButton(
-                onPressed: () {
-                  // --- عند الضغط، استدعي دالة الإرسال إلى Firebase (حالياً كتعليق) ---
-                  // _submitSuggestionToFirebase();
-                  // --- مؤقتاً لعرض البيانات في الكونسول ---
-                  print('Title: ${titleController.text}');
-                  print('Category: $selectedCategory');
-                  print('Description: ${descriptionController.text}');
-                  print('Image: ${_selectedImage?.path}');
-               //   _attachments?.forEach((file) => print('Attachment: ${file.name} - ${file.path}'));
-               //   print('Location: ${_suggestionLocation?.latitude}, ${_suggestionLocation?.longitude}');
-                   if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('سيتم هنا إرسال الاقتراح إلى Firebase.')));
-                  // --- نهاية الجزء المؤقت ---
-                },
+                onPressed: _handleSubmit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 10, 40, 95), // لون أساسي للزر
-                  foregroundColor: Colors.white, // لون النص والأيقونة
-                  minimumSize: Size(double.infinity, 52), // حجم أكبر قليلاً للزر
+                  backgroundColor: Color.fromARGB(255, 10, 40, 95),
+                  foregroundColor: Colors.white,
+                  minimumSize: Size(double.infinity, 52),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
@@ -627,11 +708,11 @@ class _SuggestionformState extends State<Suggestionform> {
                 ),
                 child: Text('إرسال الاقتراح', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               ),
-            // --- نهاية زر الإرسال ---
-            SizedBox(height: 16), // مسافة إضافية في الأسفل
+            SizedBox(height: 16),
           ],
         ),
       ),
     );
   }
 }
+ 

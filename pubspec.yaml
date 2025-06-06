@@ -19,6 +19,7 @@ dependencies:
   firebase_auth: ^5.5.4
   cloud_firestore: ^5.6.8
   location: ^5.0.3
+  geocoding: ^2.0.5
   flutter_localizations:
     sdk: flutter
 
@@ -35,3 +36,4 @@ flutter:
       fonts:
         - asset: assets/Alexandria.ttf
         - asset: assets/firestore_formatted_issues.json
+        - asset: assets/sawweb.png

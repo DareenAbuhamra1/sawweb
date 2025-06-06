@@ -5,7 +5,9 @@ import 'package:sawweb/notifications.dart';
 import 'package:sawweb/track.dart';
 
 class Navbar extends StatefulWidget {
-  const Navbar({super.key});
+  static final GlobalKey<_MyHomePageState> navbarKey = GlobalKey<_MyHomePageState>();
+
+  Navbar({Key? key}) : super(key: key);
 
   @override
   State<Navbar> createState() => _MyHomePageState();
@@ -16,6 +18,14 @@ class _MyHomePageState extends State<Navbar> {
 
 
   final List<Widget> _pages = [Homepage(), Track(), Notifications(), ChatbotScreen()];
+
+  void navigateToTab(int index) {
+    if (index >= 0 && index < _pages.length) {
+      setState(() {
+        _currentIndex = index;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {

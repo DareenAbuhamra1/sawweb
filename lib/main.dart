@@ -1,5 +1,9 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:sawweb/Navbar.dart';
+import 'package:sawweb/auth_wrapper.dart';
 import 'package:sawweb/changePassword.dart';
 import 'package:sawweb/chat.dart';
 import 'package:sawweb/homePage.dart';
@@ -11,9 +15,10 @@ import 'package:sawweb/track.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 
-void main() {
-  runApp(MainApp());
-  
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runApp(const MainApp());
 }
 
 class MainApp extends StatelessWidget {
@@ -54,7 +59,7 @@ class MainApp extends StatelessWidget {
         primarySwatch: customSwatch,
         useMaterial3: false,
       ),
-      initialRoute: 'signin',
+      home: AuthWrapper(),
       routes: {
         'signin': (context) => Signin(),
         'signup': (context) => Signup(),
@@ -63,8 +68,8 @@ class MainApp extends StatelessWidget {
         'chat': (context)=> ChatbotScreen (),
         'notifications': (context) => Notifications(),
         'navBar':(context)=>Navbar(),
-      'profile': (context) => Profile(),
-      'changePassword': (context) => ChangePasswordScreen(),
+        'profile': (context) => Profile(),
+        'changePassword': (context) => ChangePasswordScreen(),
       },
     );
   }

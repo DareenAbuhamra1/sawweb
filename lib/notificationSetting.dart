@@ -23,33 +23,36 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
     bool isMasterSwitch = false,
     bool isImportant = false, // لتمييز الإشعارات الهامة مثل الأمنية
   }) {
-    return Opacity(
-      opacity: (isMasterSwitch || _masterNotificationsEnabled) ? 1.0 : 0.5, // تعطيل بصري إذا كان المفتاح الرئيسي مغلق
-      child: SwitchListTile(
-        activeColor: _primaryColor,
-        title: Text(
-          title,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w500,
-            color: (isMasterSwitch || _masterNotificationsEnabled) ? Colors.black87 : Colors.grey.shade600,
+    return Directionality(
+      textDirection: TextDirection.rtl,
+      child: Opacity(
+        opacity: (isMasterSwitch || _masterNotificationsEnabled) ? 1.0 : 0.5, // تعطيل بصري إذا كان المفتاح الرئيسي مغلق
+        child: SwitchListTile(
+          activeColor: _primaryColor,
+          title: Text(
+            title,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+              color: (isMasterSwitch || _masterNotificationsEnabled) ? Colors.black87 : Colors.grey.shade600,
+            ),
           ),
+          subtitle: subtitle != null
+              ? Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 13,
+                    color: (isMasterSwitch || _masterNotificationsEnabled) ? _secondaryTextColor : Colors.grey.shade500,
+                  ),
+                )
+              : null,
+          value: value,
+          onChanged: (isMasterSwitch || _masterNotificationsEnabled) ? onChanged : null, // تعطيل التغيير إذا كان المفتاح الرئيسي مغلق
+          secondary: isImportant
+              ? Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700, size: 26)
+              : null,
+          contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
         ),
-        subtitle: subtitle != null
-            ? Text(
-                subtitle,
-                style: TextStyle(
-                  fontSize: 13,
-                  color: (isMasterSwitch || _masterNotificationsEnabled) ? _secondaryTextColor : Colors.grey.shade500,
-                ),
-              )
-            : null,
-        value: value,
-        onChanged: (isMasterSwitch || _masterNotificationsEnabled) ? onChanged : null, // تعطيل التغيير إذا كان المفتاح الرئيسي مغلق
-        secondary: isImportant
-            ? Icon(Icons.warning_amber_rounded, color: Colors.orange.shade700, size: 26)
-            : null,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       ),
     );
   }
