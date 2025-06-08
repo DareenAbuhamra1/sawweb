@@ -67,8 +67,15 @@ class ReportModel {
 
 class Report extends StatefulWidget {
   final String categoryName; // الفئة الأولية التي يتم تمريرها للنموذج
+  final String? initialIssue;
+  final String? initialAuthority;
 
-  Report({required this.categoryName});
+  Report({
+    required this.categoryName,
+    this.initialIssue,
+    this.initialAuthority,
+    Key? key,
+  }) : super(key: key);
 
   @override
   _ReportFormState createState() => _ReportFormState();
@@ -185,7 +192,14 @@ class _ReportFormState extends State<Report> {
   @override
   void initState() {
     super.initState();
-    fetchIssuesFromFirebase();
+    fetchIssuesFromFirebase().then((_) {
+      if (widget.initialIssue != null) {
+        setState(() {
+          selectedIssue = widget.initialIssue;
+          selectedAuthority = widget.initialAuthority;
+        });
+      }
+    });
   }
 
   Future<void> fetchIssuesFromFirebase() async {
@@ -882,33 +896,7 @@ class _ReportFormState extends State<Report> {
                       .collection('reports')
                       .add({...report.toJson(), 'full_name': fullName});
 
-                  // Add submission notification for the current user using email-to-docId lookup
-                  final user = FirebaseAuth.instance.currentUser;
-                  if (user != null) {
-                    final userSnapshot = await FirebaseFirestore.instance
-                        .collection('users')
-                        .where('email', isEqualTo: user.email)
-                        .limit(1)
-                        .get();
-                    if (userSnapshot.docs.isNotEmpty) {
-                      final userDocId = userSnapshot.docs.first.id;
-                      await FirebaseFirestore.instance
-                          .collection('users')
-                          .doc(userDocId)
-                          .collection('notificationList')
-                          .add({
-                        'title': 'تم تقديم الشكوى',
-                        'body': '${report.issue} - قيد الاطلاع',
-                        'timestamp': FieldValue.serverTimestamp(),
-                        'read': false,
-                        'location': report.placeName ?? '',
-                        'source': report.authority ?? '',
-                        'date': DateTime.now().toIso8601String(),
-                        'color': 'amber',
-                        'icon': 'sync',
-                      });
-                    }
-                  }
+
 
                   if (mounted) {
                     int selectedRating = 0;
@@ -976,27 +964,23 @@ class _ReportFormState extends State<Report> {
                                       await docRef.update({
                                         'rate': selectedRating,
                                       });
-                                      // Add notification for the current user after rating using email-to-docId lookup
+                                      // Add notification for the current user after rating using UID as docId
                                       final user = FirebaseAuth.instance.currentUser;
                                       if (user != null) {
-                                        final userSnapshot = await FirebaseFirestore.instance
+                                        final userDocId = user.uid;
+                                        await FirebaseFirestore.instance
                                             .collection('users')
-                                            .where('email', isEqualTo: user.email)
-                                            .limit(1)
-                                            .get();
-                                        if (userSnapshot.docs.isNotEmpty) {
-                                          final userDocId = userSnapshot.docs.first.id;
-                                          await FirebaseFirestore.instance
-                                              .collection('users')
-                                              .doc(userDocId)
-                                              .collection('notificationList')
-                                              .add({
-                                            'title': 'تم استلام الشكوى',
-                                            'body': 'شكراً لك على تقديم الشكوى. تم حفظها وهي قيد الاطلاع.',
-                                            'timestamp': FieldValue.serverTimestamp(),
-                                            'read': false,
-                                          });
-                                        }
+                                            .doc(userDocId)
+                                            .collection('notificationList')
+                                            .add({
+                                              'title': 'تم تقديم شكوى ${report.issue}',
+                                              'body': 'شكراً على تقديم الشكوى، تم إرسالها إلى ${report.authority} للاطلاع.',
+                                              'timestamp': FieldValue.serverTimestamp(),
+                                              'location': report.placeName ?? '',
+                                              'color':'Amber',
+                                              'icon': 'sync',
+                                              'read': false,
+                                            });
                                       }
                                       Navigator.of(context).pop();
                                     },
@@ -1043,32 +1027,22 @@ class _ReportFormState extends State<Report> {
 
 // --- Helper methods for user info ---
 Future<String?> _getCurrentUserNationalId() async {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user == null) return null;
-  final userSnapshot =
-      await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', isEqualTo: user.email)
-          .limit(1)
-          .get();
-  if (userSnapshot.docs.isEmpty) return null;
-  return userSnapshot.docs.first['national_id'];
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return null;
+  final docSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+  if (!docSnapshot.exists) return null;
+  return docSnapshot.data()?['national_id'];
 }
 
 Future<String?> _getFullName() async {
-  final user = FirebaseAuth.instance.currentUser;
-  if (user == null) return null;
-  final userSnapshot =
-      await FirebaseFirestore.instance
-          .collection('users')
-          .where('email', isEqualTo: user.email)
-          .limit(1)
-          .get();
-  if (userSnapshot.docs.isEmpty) return null;
-  final doc = userSnapshot.docs.first;
-  final firstName = doc['first_name'] ?? '';
-  final secondName = doc['second_name'] ?? '';
-  final middleName = doc['middle_name'] ?? '';
-  final lastName = doc['last_name'] ?? '';
+  final uid = FirebaseAuth.instance.currentUser?.uid;
+  if (uid == null) return null;
+  final docSnapshot = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+  if (!docSnapshot.exists) return null;
+  final data = docSnapshot.data()!;
+  final firstName = data['first_name'] ?? '';
+  final secondName = data['second_name'] ?? '';
+  final middleName = data['middle_name'] ?? '';
+  final lastName = data['last_name'] ?? '';
   return '$firstName $secondName $middleName $lastName';
 }

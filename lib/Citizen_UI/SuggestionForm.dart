@@ -186,19 +186,16 @@ class _SuggestionformState extends State<Suggestionform> {
     }
   }
   Future<void> _handleSubmit() async {
-    final email = FirebaseAuth.instance.currentUser?.email;
-    if (email == null) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('تعذر تحديد البريد الإلكتروني للمستخدم.')));
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('تعذر تحديد المستخدم.')));
       return;
     }
 
-    final querySnapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .where('email', isEqualTo: email)
-        .limit(1)
-        .get();
+    final userDocRef = FirebaseFirestore.instance.collection('users').doc(uid);
+    final userDocSnap = await userDocRef.get();
 
-    if (querySnapshot.docs.isEmpty) {
+    if (!userDocSnap.exists) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -215,7 +212,7 @@ class _SuggestionformState extends State<Suggestionform> {
       return;
     }
 
-    final userData = querySnapshot.docs.first.data();
+    final userData = userDocSnap.data()!;
 
     final fullName = '${userData['first_name']} ${userData['second_name']} ${userData['middle_name']} ${userData['last_name']}';
     final nationalId = userData['national_id'] ?? '';
@@ -266,7 +263,7 @@ class _SuggestionformState extends State<Suggestionform> {
         'category': suggestion.category,
         'timestamp': Timestamp.fromDate(DateTime.now()),
       };
-      final userDoc = querySnapshot.docs.first.reference;
+      final userDoc = userDocRef;
       await userDoc.collection('notificationList').add(notification);
 
       if (mounted) {

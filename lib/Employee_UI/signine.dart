@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Signine extends StatefulWidget {
@@ -11,8 +13,95 @@ class _SignineState extends State<Signine> {
   final TextEditingController jobNumberController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  void _signIn() {
-    Navigator.pushReplacementNamed(context, 'home_emp');
+  void _signIn() async {
+    final String enteredId = jobNumberController.text.trim();
+    final String enteredPassword = passwordController.text.trim();
+    print('Attempting sign-in with ID: $enteredId');
+    String? emailToUse;
+
+    try {
+      // Try to find email in admins
+      print('Checking in admins...');
+      final adminQuery = await FirebaseFirestore.instance
+          .collection('admins')
+          .where('admin_id', isEqualTo: enteredId)
+          .get();
+
+      if (adminQuery.docs.isNotEmpty) {
+        emailToUse = adminQuery.docs.first['email'];
+        print('Admin email found: $emailToUse');
+      } else {
+        // Try to find email in employees
+        print('Checking in employees...');
+        final empQuery = await FirebaseFirestore.instance
+            .collection('employees')
+            .where('emp_id', isEqualTo: enteredId)
+            .get();
+
+        if (empQuery.docs.isNotEmpty) {
+          emailToUse = empQuery.docs.first['email'];
+          print('Employee email found: $emailToUse');
+        }
+      }
+
+      if (emailToUse == null) {
+        throw FirebaseAuthException(
+          message: 'الرقم الوظيفي غير مسجل',
+          code: 'user-not-found',
+        );
+      }
+
+      // Sign in with found email
+      print('Signing in with email: $emailToUse');
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithEmailAndPassword(email: emailToUse, password: enteredPassword);
+      final uid = userCredential.user?.uid;
+      print('Signed in successfully, UID: $uid');
+
+      if (uid == null) {
+        throw FirebaseAuthException(message: 'Unknown error', code: 'unknown');
+      }
+
+      // Check UID directly in admins collection using doc(uid)
+      final adminDoc = await FirebaseFirestore.instance
+          .collection('admins')
+          .doc(uid)
+          .get();
+
+      if (adminDoc.exists) {
+        print('Routing to: NavBarAdmin');
+        Navigator.pushReplacementNamed(context, 'homeAdmin');
+        return;
+      }
+
+      // Check if the UID is in employees
+      final empDoc = await FirebaseFirestore.instance
+          .collection('employees')
+          .doc(uid)
+          .get();
+
+      if (empDoc.exists) {
+        print('Routing to: home_emp');
+        Navigator.pushReplacementNamed(context, 'home_emp');
+        return;
+      }
+
+      // If uid not found in any collection
+      print('UID not found in any collection');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('الرقم الوظيفي أو كلمة السر غير صحيحة'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('فشل تسجيل الدخول: ${e.message}'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
   }
 
   @override

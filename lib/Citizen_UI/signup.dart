@@ -138,10 +138,10 @@ class Signup extends StatelessWidget {
 
                   final existingUser = await FirebaseFirestore.instance
                       .collection('users')
-                      .doc(nationalId)
+                      .where('national_id', isEqualTo: nationalId)
                       .get();
 
-                  if (existingUser.exists) {
+                  if (existingUser.docs.isNotEmpty) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('تم إنشاء حساب مسبقًا لهذا الرقم الوطني')),
                     );
@@ -152,10 +152,13 @@ class Signup extends StatelessWidget {
                     final userCredential = await FirebaseAuth.instance
                         .createUserWithEmailAndPassword(email: email, password: password);
 
+                    final uid = userCredential.user!.uid;
+
                     await FirebaseFirestore.instance
                         .collection('users')
-                        .doc(nationalId)
+                        .doc(uid)
                         .set({
+                      'uid': uid,
                       'national_id': nationalId,
                       'first_name': citizenDoc['first_name'],
                       'second_name': citizenDoc['second_name'],
@@ -170,7 +173,7 @@ class Signup extends StatelessWidget {
                     );
                   } catch (e) {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('فشل في إنشاء الحساب: $e')),
+                      SnackBar(content: Text('فشل في إنشاء الحساب: $e'),backgroundColor: Colors.red,),
                     );
                   }
                 },

@@ -17,14 +17,13 @@ class _TrackState extends State<Track> {
     final user = FirebaseAuth.instance.currentUser;
     if (user == null) return [];
 
-    final usersSnapshot = await FirebaseFirestore.instance
+    final userDoc = await FirebaseFirestore.instance
         .collection('users')
-        .where('email', isEqualTo: user.email)
-        .limit(1)
+        .doc(user.uid)
         .get();
-    if (usersSnapshot.docs.isEmpty) return [];
+    if (!userDoc.exists) return [];
 
-    final nationalId = usersSnapshot.docs.first.data()['national_id'];
+    final nationalId = userDoc.data()?['national_id'];
     print('Using national ID: $nationalId');
 
     final snapshot = await FirebaseFirestore.instance
@@ -522,6 +521,22 @@ class _TrackState extends State<Track> {
 
                                   if (confirmed == true) {
                                     final docId = complaint['docId'];
+                                    final userId = FirebaseAuth.instance.currentUser?.uid;
+                                    if (userId != null) {
+                                      await FirebaseFirestore.instance
+                                          .collection('users')
+                                          .doc(userId)
+                                          .collection('notificationList')
+                                          .add({
+                                            'title': 'تم حذف الشكوى',
+                                            'body': 'تم حذف الشكوى الخاصة بـ ${complaint['issue'] ?? 'المشكلة'}',
+                                            'timestamp': FieldValue.serverTimestamp(),
+                                            'color': 'red',
+                                            'icon': 'delete',
+                                            'read': false,
+                                            'location': complaint['place_name'] ?? 'الموقع غير محدد',
+                                          });
+                                    }
                                     await FirebaseFirestore.instance.collection('reports').doc(docId).delete();
                                     // ignore: use_build_context_synchronously
                                     setState(() {});

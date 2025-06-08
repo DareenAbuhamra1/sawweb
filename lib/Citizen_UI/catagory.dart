@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
-// الصفحة الثانية اللي رح تنقل لها مع تمرير التصنيف
-import 'report.dart'; // غير المسار حسب مكان الملف عندك
+import 'report.dart'; 
 
 class CategoriesGrid extends StatefulWidget {
   @override

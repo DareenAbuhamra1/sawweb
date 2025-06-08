@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:sawweb/Admin_UI/Homepage.dart';
 import 'package:sawweb/Citizen_UI/Navbar.dart';
 import 'package:sawweb/Employee_UI/complaints.dart';
 import 'package:sawweb/Employee_UI/complaintsDetails.dart';
@@ -20,11 +21,13 @@ import 'package:sawweb/Citizen_UI/signup.dart';
 import 'package:sawweb/Citizen_UI/track.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:sawweb/Employee_UI/signine.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  await initializeDateFormatting('ar', null);
   runApp(const MainApp());
 }
 
@@ -78,12 +81,13 @@ class MainApp extends StatelessWidget {
         'profile': (context) => Profile(),
         'changePassword': (context) => ChangePasswordScreen(),
         'signin_emp':(context) => Signine(),
-        'home_emp' : (context) =>Homee(),
+        'home_emp' : (context) => HomeEmp(),
         'complaint_emp':(context) => ComplaintsPage(),
         'complaint_details' : (context) => Complaintsdetails(),
         'profile_emp' : (context) =>Profilee(),
         'sugg_emp' : (context) => Sugg(),
-        'sugg_details': (context) => Suggestiondetails()
+        'sugg_details': (context) => Suggestiondetails(),
+        'homeAdmin':(context) => AdminHomeScreen(),
       },
     );
   }

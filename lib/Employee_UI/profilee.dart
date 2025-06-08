@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class Profilee extends StatelessWidget {
   const Profilee({super.key});
@@ -297,6 +298,8 @@ Widget _buildLogoutButton(BuildContext context) {
                       style: TextStyle(color: Colors.red.shade700),
                     ),
                     onPressed: () async {
+                      await FirebaseAuth.instance.signOut();
+                      Navigator.pushNamedAndRemoveUntil(context, 'signin_emp', (route) => false);
                     },
                   ),
                 ],

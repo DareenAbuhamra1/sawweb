@@ -6,7 +6,6 @@ class NotificationItem {
   final String title;
   final String body;
   final String location;
-  final String source;
   final String date;
   final Color color;
   final IconData icon;
@@ -16,7 +15,6 @@ class NotificationItem {
     required this.title,
     required this.body,
     required this.location,
-    required this.source,
     required this.date,
     required this.color,
     required this.icon,
@@ -58,56 +56,42 @@ class Notifications extends StatelessWidget {
           child: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance
                 .collection('users')
-                .where('email', isEqualTo: user.email)
+                .doc(user.uid)
+                .collection('notificationList')
+                .orderBy('timestamp', descending: true)
                 .snapshots(),
-            builder: (context, snapshot) {
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+            builder: (context, notifSnapshot) {
+              if (notifSnapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              }
+              if (!notifSnapshot.hasData || notifSnapshot.data!.docs.isEmpty) {
                 return Center(child: Text('لا توجد إشعارات حالياً'));
               }
-              final userDoc = snapshot.data!.docs.first;
-              return StreamBuilder<QuerySnapshot>(
-                stream: FirebaseFirestore.instance
-                    .collection('users')
-                    .doc(userDoc.id)
-                    .collection('notificationList')
-                    .orderBy('date', descending: true)
-                    .snapshots(),
-                builder: (context, notifSnapshot) {
-                  if (notifSnapshot.connectionState == ConnectionState.waiting) {
-                    return Center(child: CircularProgressIndicator());
-                  }
-                  if (!notifSnapshot.hasData || notifSnapshot.data!.docs.isEmpty) {
-                    return Center(child: Text('لا توجد إشعارات حالياً'));
-                  }
 
-                  final notifications = notifSnapshot.data!.docs.map((doc) {
-                    final data = doc.data() as Map<String, dynamic>;
-                    return NotificationItem(
-                      title: data['title'] ?? '',
-                      body: data['body'] ?? '',
-                      location: data['location'] ?? '',
-                      source: data['source'] ?? '',
-                      date: (data['timestamp'] as Timestamp?)?.toDate().toString().split(' ').first ?? '',
-                      color: Color(int.tryParse(data['color']) ?? 0xFFFFC107),
-                      icon: IconData(data['icon'] != null ? Icons.sync.codePoint : Icons.notifications.codePoint, fontFamily: 'MaterialIcons'),
-                      read: data['read'] ?? false,
-                    );
-                  }).toList();
+              final notifications = notifSnapshot.data!.docs.map((doc) {
+                final data = doc.data() as Map<String, dynamic>;
+                return NotificationItem(
+                  title: data['title'] ?? '',
+                  body: data['body'] ?? '',
+                  location: data['location'] ?? '',
+                  date: (data['timestamp'] as Timestamp?)?.toDate().toString().split(' ').first ?? '',
+                  color: _getColorFromName(data['color'] ?? 'amber'),
+                  icon: _getIconFromName(data['icon'] ?? 'notifications'),
+                  read: data['read'] ?? false,
+                );
+              }).toList();
 
-                  return ListView(
-                    children: notifications.map((notif) => _buildNotificationCard(
-                      context,
-                      title: notif.title,
-                      body: notif.body,
-                      location: notif.location,
-                      source: notif.source,
-                      date: notif.date,
-                      color: notif.color,
-                      icon: notif.icon,
-                      read: notif.read,
-                    )).toList(),
-                  );
-                },
+              return ListView(
+                children: notifications.map((notif) => _buildNotificationCard(
+                  context,
+                  title: notif.title,
+                  body: notif.body,
+                  location: notif.location,
+                  date: notif.date,
+                  color: notif.color,
+                  icon: notif.icon,
+                  read: notif.read,
+                )).toList(),
               );
             },
           ),
@@ -117,12 +101,39 @@ class Notifications extends StatelessWidget {
   }
 }
 
+Color _getColorFromName(String name) {
+  switch (name.toLowerCase()) {
+    case 'red':
+      return Colors.red;
+    case 'green':
+      return Colors.green;
+    case 'blue':
+      return Colors.blue;
+    case 'amber':
+      return Colors.amber;
+    default:
+      return Colors.grey;
+  }
+}
+
+IconData _getIconFromName(String name) {
+  switch (name.toLowerCase()) {
+    case 'delete':
+      return Icons.close;
+    case 'sync':
+      return Icons.sync;
+    case 'check':
+      return Icons.check_circle;
+    default:
+      return Icons.notifications;
+  }
+}
+
 Widget _buildNotificationCard(
   BuildContext context, {
   required String title,
   required String body,
   required String location,
-  required String source,
   required String date,
   required Color color,
   required IconData icon,
@@ -167,12 +178,15 @@ Widget _buildNotificationCard(
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
+            Icon(Icons.location_on, size: 18, color: Colors.grey),
+            SizedBox(width: 4),
             Expanded(
               child: Text(
-                'الموقع: $location',
+                location,
+                style: TextStyle(color: Colors.grey[700]),
                 softWrap: true,
                 overflow: TextOverflow.visible,
-                maxLines: null,
+                maxLines: 2,
               ),
             ),
           ],
@@ -181,15 +195,6 @@ Widget _buildNotificationCard(
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(
-              child: Text(
-                'الجهة: $source',
-                softWrap: true,
-                overflow: TextOverflow.visible,
-                maxLines: null,
-              ),
-            ),
-            SizedBox(width: 16),
             Text(
               'التاريخ: $date',
               softWrap: true,

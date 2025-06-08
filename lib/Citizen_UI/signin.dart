@@ -28,19 +28,20 @@ class _SigninState extends State<Signin> {
     final password = passwordController.text.trim();
 
     try {
-      final userDoc = await FirebaseFirestore.instance
+      final querySnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .doc(nationalId)
+          .where('national_id', isEqualTo: nationalId)
           .get();
 
-      if (!userDoc.exists) {
+      if (querySnapshot.docs.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('لم يتم العثور على المستخدم')),
+          SnackBar(content: Text('لم يتم العثور على المستخدم',), backgroundColor: Colors.red),
         );
         return;
       }
 
-      final email = userDoc['email'];
+      final userData = querySnapshot.docs.first.data();
+      final email = userData['email'];
 
       await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: email,
@@ -50,7 +51,7 @@ class _SigninState extends State<Signin> {
       Navigator.of(context).pushReplacementNamed('navBar');
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('فشل تسجيل الدخول: ${e.toString()}')),
+        SnackBar(content: Text('فشل تسجيل الدخول: ${e.toString()}'),backgroundColor: Colors.red,),
       );
     }
   }
@@ -86,7 +87,6 @@ class _SigninState extends State<Signin> {
                 style: TextStyle(fontFamily: 'AlexandriaArabic', fontSize: 20),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 10),
               Text(
                 "فضلًا، أدخل رقمك الوطني لتسجيل الدخول",
                 style: TextStyle(fontFamily: 'AlexandriaArabic', fontSize: 15),

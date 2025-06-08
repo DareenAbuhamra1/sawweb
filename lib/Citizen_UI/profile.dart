@@ -35,11 +35,10 @@ class _ProfileState extends State<Profile> {
     if (user != null) {
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
-          .where('email', isEqualTo: user.email)
-          .limit(1)
+          .doc(user.uid)
           .get();
-      if (userDoc.docs.isNotEmpty) {
-        final data = userDoc.docs.first.data();
+      if (userDoc.exists) {
+        final data = userDoc.data()!;
         setState(() {
           _userName =
               '${data['first_name']} ${data['second_name']} ${data['middle_name']} ${data['last_name']}';
@@ -49,7 +48,7 @@ class _ProfileState extends State<Profile> {
         });
         print("Profile loaded for: $_userName");
       } else {
-        print("User document not found for email: ${user.email}");
+        print("User document not found for uid: ${user.uid}");
       }
     } else {
       print("No user is currently signed in.");
