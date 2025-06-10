@@ -17,13 +17,12 @@ class AdminHomeScreen extends StatefulWidget {
 class _AdminHomeScreenState extends State<AdminHomeScreen> {
   final Color _primaryColor = const Color.fromARGB(255, 10, 40, 95);
   final String _adminName = "آيات"; // مثال، سيتم جلبه لاحقاً
-  final String _adminEmail = "admin@example.gov.jo"; // مثال
+  final String _adminEmail = 'ayat@admin.gov.jo'; // مثال
   String _selectedPageTitle = "لوحة التحكم الرئيسية";
   final List<ChartData> chartData = [
     ChartData("الشكاوى الجديدة", 15, const Color.fromARGB(255, 224, 161, 98)),
     ChartData("الاقتراحات الجديدة", 8, const Color.fromARGB(255, 157, 202, 242)),
     ChartData("شكاوى تم حلها", 120, const Color.fromARGB(255, 138, 225, 142)),
-    ChartData("إجمالي الموظفين", 45, const Color.fromARGB(255, 192, 156, 255)),
   ];
 
   Widget _buildDrawerItem({

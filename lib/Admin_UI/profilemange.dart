@@ -8,11 +8,11 @@ class AdminProfileScreen extends StatefulWidget {
 }
 
 class _AdminProfileScreenState extends State<AdminProfileScreen> {
-  final String _adminName = "اسم الأدمن المسؤول"; //  مثلاً: ندى (مدير النظام)
+  final String _adminName = 'آيات جميل حسن أبو عيد'; //  مثلاً: ندى (مدير النظام)
   final String _adminRole = "مدير النظام";
   final String _adminEmail = "admin.ayat@sawweb.gov.jo";
   final String _adminPhoneNumber = "0790000000";
-  final String _adminNumber = "1234";
+  final String _adminNumber = "ADM-TR-001";
   final String _authorityName = "أمانة عمان";
 
   final Color _primaryColor = const Color.fromARGB(255, 10, 40, 95);
@@ -115,10 +115,14 @@ class _AdminProfileScreenState extends State<AdminProfileScreen> {
               centerTitle: true,
               backgroundColor: Colors.white,
               elevation: 0,
-              leading:
-                  Navigator.canPop(context)
-                      ? BackButton(color: _primaryColor)
-                      : null,
+              actions: [
+                Navigator.canPop(context)
+                    ? IconButton(
+                        icon: Icon(Icons.arrow_forward, color: _primaryColor),
+                        onPressed: () => Navigator.pop(context),
+                      )
+                    : SizedBox.shrink(),
+              ],
             ),
           ),
         ),

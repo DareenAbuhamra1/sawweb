@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:sawweb/Employee_UI/notif_sett.dart';
+import 'package:sawweb/Employee_UI/update.dart';
 
 class Profilee extends StatelessWidget {
   const Profilee({super.key});
@@ -71,19 +73,19 @@ Widget _buildInfoCard() {
                _buildInfoTile(
                 icon: Icons.badge_outlined,
                 title: "الرقم الوظيفي",
-                subtitle: '00045345',
+                subtitle: 'EMP-TR-001',
                 onTap: () {},
               ),
               _buildInfoTile(
                 icon: Icons.email_outlined,
                 title: "البريد الإلكتروني",
-                subtitle: 'dareen@gmail.com',
+                subtitle: 'ahmadAli@employee.gov.jo',
                 onTap: () {},
               ),
               _buildInfoTile(
                 icon: Icons.phone_outlined,
                 title: "رقم الهاتف",
-                subtitle: '077009898',
+                subtitle: '0791112233',
                 onTap: () {},
               ),
              
@@ -136,7 +138,7 @@ Widget _buildActionsCard(BuildContext context) {
                 icon: Icons.edit_outlined,
                 title: "تعديل الملف الشخصي",
                 onTap: () {
-                  
+                  Navigator.of(context).push(MaterialPageRoute(builder: (context) =>edit(email: 'ahmadAli@employee.gov.jo', phone: '0791112233', name: 'أحمد خالد محمود علي')));
                 },
               ),
               _buildDivider(),
@@ -152,7 +154,7 @@ Widget _buildActionsCard(BuildContext context) {
                 icon: Icons.notifications_none_outlined,
                 title: "إعدادات الإشعارات",
                 onTap: () {
-                  
+                   Navigator.of(context).push(MaterialPageRoute(builder: (context) =>NotificationSettings()));
                 },
               ),
             ],
@@ -188,7 +190,7 @@ Widget _buildHeader() {
           ),
         SizedBox(height: 15),
         Text(
-          'دارين سامر أحمد أبو حمرة',
+          'أحمد خالد محمود علي',
           style: TextStyle(
             color: Color(0xFF0A285F),
             fontSize: 22,
@@ -198,7 +200,7 @@ Widget _buildHeader() {
         ),
         SizedBox(height: 5),
         Text(
-          "200202050",
+          '5101012345',
           style: TextStyle(
             color: Color(0xFF0A285F),
             fontSize: 14,

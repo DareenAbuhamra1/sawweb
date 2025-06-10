@@ -366,13 +366,12 @@ class _SuggestionDetailAdminScreenState
               centerTitle: true,
               backgroundColor: Colors.white,
               elevation: 0,
-              leading: BackButton(
-                color: _primaryColor,
-                onPressed:
-                    () => Navigator.of(
-                      context,
-                    ).pop(_currentSuggestionData.status),
-              ),
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.arrow_forward, color: _primaryColor),
+                  onPressed: () => Navigator.of(context).pop(_currentSuggestionData.status),
+                ),
+              ],
             ),
           ),
         ),

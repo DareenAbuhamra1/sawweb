@@ -1,6 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:sawweb/Employee_UI/complaints.dart';
 
+class _TaskPieChartPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..style = PaintingStyle.fill;
+
+    final radius = size.width / 2;
+    final center = Offset(size.width / 2, size.height / 2);
+
+    const double startAngle = -90;
+    final double completedSweep = 360 * 0.6;
+    final double newSweep = 360 * 0.4;
+
+    // Draw completed tasks (60%)
+    paint.color = Color(0xFF496D8D);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      startAngle * 3.1415927 / 180,
+      completedSweep * 3.1415927 / 180,
+      true,
+      paint,
+    );
+
+    // Draw new tasks (40%)
+    paint.color = Colors.grey;
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      (startAngle + completedSweep) * 3.1415927 / 180,
+      newSweep * 3.1415927 / 180,
+      true,
+      paint,
+    );
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) => false;
+}
+
 
 class HomeEmp extends StatelessWidget {
   const HomeEmp({super.key});
@@ -15,7 +53,7 @@ class HomeEmp extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(top: 20.0),
             child: Text(
-              "!مرحبًا دارين",
+              "!مرحبًا أحمد",
               style: TextStyle(
                 color: Color.fromRGBO(96, 101, 113, 1),
                 fontSize: 18,
@@ -167,17 +205,11 @@ class HomeEmp extends StatelessWidget {
                 const SizedBox(height: 20),
                 Center(
                   child: Container(
-                    width: 200,
-                    height: 200,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.white,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                        ),
-                      ],
+                    width: 180,
+                    height: 180,
+                    child: CustomPaint(
+                      painter: _TaskPieChartPainter(),
+                      size: Size(180, 180),
                     ),
                   ),
                 ),

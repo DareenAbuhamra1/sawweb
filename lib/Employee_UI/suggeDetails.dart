@@ -29,7 +29,7 @@ class Suggestiondetails extends StatelessWidget {
                   const Align(
                     alignment: Alignment.center,
                     child: Text(
-                      "الشكاوي",
+                      "الاقتراحات",
                       style: TextStyle(
                         color: Color.fromARGB(255, 10, 40, 95),
                         fontWeight: FontWeight.bold,

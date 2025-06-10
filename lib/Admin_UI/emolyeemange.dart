@@ -13,16 +13,16 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
   final Color _primaryColor = const Color.fromARGB(255, 10, 40, 95);
   final Color _appBackgroundColor = const Color.fromARGB(255, 242, 242, 245);
   List<EmployeeModel> _employees = [
-    EmployeeModel(id: 'emp001', nationalId: '1990101012345', employeeId: 'EMP-TR-001', fullName: 'أحمد خالد محمود علي', phoneNumber: '0791112233', department: 'صيانة الطرق', responsibility: 'إصلاح الحفر ومعالجة تشققات الأسفلت', isActive: true),
-    EmployeeModel(id: 'emp002', nationalId: '1985051567890', employeeId: 'EMP-WM-001', fullName: 'فاطمة سعيد ياسين القاسم', phoneNumber: '0782223344', department: 'شبكات المياه والصرف', responsibility: 'متابعة تسربات المياه وصيانة خطوط الصرف', isActive: true),
-    EmployeeModel(id: 'emp003', nationalId: '1992082011223', employeeId: 'EMP-EL-001', fullName: 'يوسف إبراهيم حسن مراد', phoneNumber: '0773334455', department: 'الإنارة العامة', responsibility: 'صيانة أعمدة الإنارة واستبدال المصابيح', isActive: false),
-    EmployeeModel(id: 'emp004', nationalId: '1988020255667', employeeId: 'EMP-CL-001', fullName: 'سارة عمر عبد الرحمن حمدان', phoneNumber: '0794445566', department: 'النظافة والبيئة', responsibility: 'الإشراف على فرق النظافة ومتابعة الشكاوى البيئية', isActive: true),
-    EmployeeModel(id: 'emp005', nationalId: '1995113088990', employeeId: 'EMP-AG-001', fullName: 'محمد علي حسين الشريف', phoneNumber: '0785556677', department: 'الزراعة والحدائق', responsibility: 'صيانة الحدائق العامة وتقليم الأشجار', isActive: true),
-    EmployeeModel(id: 'emp006', nationalId: '1993071023456', employeeId: 'EMP-TR-002', fullName: 'ليلى ناصر جمال موسى', phoneNumber: '0776667788', department: 'صيانة الطرق', responsibility: 'متابعة سلامة الإشارات الضوئية والمرورية', isActive: true),
-    EmployeeModel(id: 'emp007', nationalId: '1980012578901', employeeId: 'EMP-WM-002', fullName: 'حسن عبدالله أحمد إسماعيل', phoneNumber: '0797778899', department: 'شبكات المياه والصرف', responsibility: 'فحص جودة المياه ومعالجة شكاوى التلوث', isActive: true),
-    EmployeeModel(id: 'emp008', nationalId: '1998041834567', employeeId: 'EMP-SC-001', fullName: 'نور سامي كمال إبراهيم', phoneNumber: '0788889900', department: 'السلامة العامة', responsibility: 'متابعة مخالفات البناء واللوحات الإعلانية', isActive: false),
-    EmployeeModel(id: 'emp009', nationalId: '1991090545678', employeeId: 'EMP-EL-002', fullName: 'عمر محمود صالح خليل', phoneNumber: '0779990011', department: 'الإنارة العامة', responsibility: 'الاستجابة لطلبات الإنارة الجديدة', isActive: true),
-    EmployeeModel(id: 'emp010', nationalId: '1987031267890', employeeId: 'EMP-CL-002', fullName: 'ريم خالد يوسف عوض', phoneNumber: '0790001122', department: 'النظافة والبيئة', responsibility: 'مكافحة الحشرات والقوارض في المناطق العامة', isActive: true),
+    EmployeeModel(id: 'emp001', nationalId: '5101012345', employeeId: 'EMP-TR-001', fullName: 'أحمد خالد محمود علي', phoneNumber: '0791112233', department: 'صيانة الطرق', responsibility: 'إصلاح الحفر ومعالجة تشققات الأسفلت', isActive: true),
+    EmployeeModel(id: 'emp002', nationalId: '5051567890', employeeId: 'EMP-WM-001', fullName: 'فاطمة سعيد ياسين القاسم', phoneNumber: '0782223344', department: 'شبكات المياه والصرف', responsibility: 'متابعة تسربات المياه وصيانة خطوط الصرف', isActive: true),
+    EmployeeModel(id: 'emp003', nationalId: '2082011223', employeeId: 'EMP-EL-001', fullName: 'يوسف إبراهيم حسن مراد', phoneNumber: '0773334455', department: 'الإنارة العامة', responsibility: 'صيانة أعمدة الإنارة واستبدال المصابيح', isActive: false),
+    EmployeeModel(id: 'emp004', nationalId: '8020255667', employeeId: 'EMP-CL-001', fullName: 'سارة عمر عبد الرحمن حمدان', phoneNumber: '0794445566', department: 'النظافة والبيئة', responsibility: 'الإشراف على فرق النظافة ومتابعة الشكاوى البيئية', isActive: true),
+    EmployeeModel(id: 'emp005', nationalId: '5113088990', employeeId: 'EMP-AG-001', fullName: 'محمد علي حسين الشريف', phoneNumber: '0785556677', department: 'الزراعة والحدائق', responsibility: 'صيانة الحدائق العامة وتقليم الأشجار', isActive: true),
+    EmployeeModel(id: 'emp006', nationalId: '3071023456', employeeId: 'EMP-TR-002', fullName: 'ليلى ناصر جمال موسى', phoneNumber: '0776667788', department: 'صيانة الطرق', responsibility: 'متابعة سلامة الإشارات الضوئية والمرورية', isActive: true),
+    EmployeeModel(id: 'emp007', nationalId: '0012578901', employeeId: 'EMP-WM-002', fullName: 'حسن عبدالله أحمد إسماعيل', phoneNumber: '0797778899', department: 'شبكات المياه والصرف', responsibility: 'فحص جودة المياه ومعالجة شكاوى التلوث', isActive: true),
+    EmployeeModel(id: 'emp008', nationalId: '8041834567', employeeId: 'EMP-SC-001', fullName: 'نور سامي كمال إبراهيم', phoneNumber: '0788889900', department: 'السلامة العامة', responsibility: 'متابعة مخالفات البناء واللوحات الإعلانية', isActive: false),
+    EmployeeModel(id: 'emp009', nationalId: '1090545678', employeeId: 'EMP-EL-002', fullName: 'عمر محمود صالح خليل', phoneNumber: '0779990011', department: 'الإنارة العامة', responsibility: 'الاستجابة لطلبات الإنارة الجديدة', isActive: true),
+    EmployeeModel(id: 'emp010', nationalId: '7031267890', employeeId: 'EMP-CL-002', fullName: 'ريم خالد يوسف عوض', phoneNumber: '0790001122', department: 'النظافة والبيئة', responsibility: 'مكافحة الحشرات والقوارض في المناطق العامة', isActive: true),
   ];
 
   void _navigateToAddEmployeeScreen() {
@@ -190,7 +190,7 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     return Scaffold(
       backgroundColor: _appBackgroundColor,
       appBar: PreferredSize(
-         preferredSize: const Size.fromHeight(75),
+        preferredSize: const Size.fromHeight(75),
         child: Material(
           elevation: 2,
           shadowColor: Colors.black.withOpacity(0.1),
@@ -205,7 +205,15 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
               centerTitle: true,
               backgroundColor: const Color.fromARGB(255, 10, 40, 95),
               elevation: 0,
-              leading: Navigator.canPop(context) ? BackButton(color: Colors.white) : null,
+              automaticallyImplyLeading: false,
+              actions: [
+                Navigator.canPop(context)
+                    ? IconButton(
+                        icon: Icon(Icons.arrow_forward, color: Colors.white),
+                        onPressed: () => Navigator.pop(context),
+                      )
+                    : SizedBox.shrink(),
+              ],
             ),
           ),
         ),
@@ -249,4 +257,3 @@ class _EmployeeListScreenState extends State<EmployeeListScreen> {
     );
   }
 }
-

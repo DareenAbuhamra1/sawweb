@@ -286,10 +286,14 @@ class _ComplaintsManagementScreenState
               centerTitle: true,
               backgroundColor: Colors.white,
               elevation: 0,
-              leading:
-                  Navigator.canPop(context)
-                      ? BackButton(color: _primaryColor)
-                      : null,
+              actions: [
+                Navigator.canPop(context)
+                    ? IconButton(
+                        icon: Icon(Icons.arrow_forward, color: _primaryColor),
+                        onPressed: () => Navigator.pop(context),
+                      )
+                    : SizedBox.shrink(),
+              ],
             ),
           ),
         ),

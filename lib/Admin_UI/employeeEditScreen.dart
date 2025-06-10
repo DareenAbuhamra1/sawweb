@@ -157,7 +157,13 @@ class _AddEditEmployeeScreenState extends State<AddEditEmployeeScreen> {
               centerTitle: true,
               backgroundColor: Colors.white,
               elevation: 0,
-              leading: BackButton(color: _primaryColor, onPressed: () => Navigator.of(context).pop()),
+              automaticallyImplyLeading: false,
+              actions: [
+                IconButton(
+                  icon: Icon(Icons.arrow_forward, color: _primaryColor),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+              ],
             ),
           ),
         ),

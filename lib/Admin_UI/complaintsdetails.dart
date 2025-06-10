@@ -267,11 +267,12 @@ class _ComplaintDetailScreenState extends State<ComplaintDetailScreen> {
         centerTitle: true,
         backgroundColor: Colors.white,
         elevation: 0,
-        leading: BackButton(
-          color: _primaryColor,
-          onPressed:
-              () => Navigator.of(context).pop(_currentComplaintData.status),
-        ), // إرجاع الحالة عند الرجوع
+        actions: [
+          IconButton(
+            icon: Icon(Icons.arrow_forward, color: _primaryColor),
+            onPressed: () => Navigator.of(context).pop(_currentComplaintData.status),
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 80),
