@@ -51,19 +51,27 @@ class HomeEmp extends StatelessWidget {
         elevation: 0,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(top: 20.0),
+            padding: const EdgeInsets.only(right: 200.0),
+            child: IconButton(
+              icon: Icon(Icons.notifications_none, color: Color.fromARGB(255, 10, 40, 95), size: 30),
+              onPressed: () {
+                // handle notification tap if needed
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only( top: 20.0),
             child: Text(
               "!مرحبًا أحمد",
               style: TextStyle(
                 color: Color.fromRGBO(96, 101, 113, 1),
                 fontSize: 18,
-
                 fontWeight: FontWeight.bold,
               ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(right: 20.0),
+            padding: const EdgeInsets.only(right: 10),
             child: IconButton(
               onPressed: () {
                Navigator.pushNamed(context, 'profile_emp');
@@ -75,6 +83,7 @@ class HomeEmp extends StatelessWidget {
               ),
             ),
           ),
+          
         ],
       ),
       body: Column(
